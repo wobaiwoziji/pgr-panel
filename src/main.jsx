@@ -147,6 +147,10 @@ export default function App() {
       <div className={`holo hit ${open ? "is-open" : ""}`}>
         {/* 唯一做倾斜的一层；里面全是正矩形 */}
         <div className="tilt" data-ed="tilt">
+          {/* 投影轨迹：两片三角，边贴面板上下沿，角连镜头 */}
+          <div className="tri tri-top" />
+          <div className="tri tri-bottom" />
+
           <div className="panel">
             <div className="plane" data-ed="plane" />
 
