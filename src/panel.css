@@ -135,7 +135,7 @@ body.preview #root {
   position: absolute;
   inset: 0;
   background: linear-gradient(178deg, rgba(6, 40, 96, 0.62) 0%, rgba(40, 120, 214, 0.42) 48%, rgba(140, 215, 255, 0.55) 100%),
-    repeating-conic-gradient(from 0deg, rgba(150, 200, 250, 0.16) 0% 25%, transparent 0% 50%) 0 0 / 7px 7px;
+    repeating-conic-gradient(from 0deg, rgba(130, 185, 245, 0.3) 0% 25%, transparent 0% 50%) 0 0 / 7px 7px;
   border-radius: 18px;
   overflow: hidden;
   filter: blur(2px);
