@@ -135,8 +135,8 @@ body.preview #root {
   position: absolute;
   inset: 0;
   background: linear-gradient(178deg, rgba(6, 40, 96, 0.62) 0%, rgba(40, 120, 214, 0.42) 48%, rgba(140, 215, 255, 0.55) 100%),
-    repeating-linear-gradient(0deg, rgba(150, 205, 255, 0.22) 0 1px, transparent 1px 8px),
-    repeating-linear-gradient(90deg, rgba(150, 205, 255, 0.18) 0 1px, transparent 1px 8px);
+    repeating-linear-gradient(0deg, rgba(150, 205, 255, 0.22) 0 1px, transparent 1px 10px),
+    repeating-linear-gradient(90deg, rgba(150, 205, 255, 0.18) 0 1px, transparent 1px 10px);
   border-radius: 18px;
   overflow: hidden;
   filter: blur(0.7px);
