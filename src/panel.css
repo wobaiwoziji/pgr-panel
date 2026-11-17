@@ -374,8 +374,8 @@ body.preview #root {
 /* ── 投影镜头（在倾斜层外，正对屏幕）── */
 .lens {
   position: absolute;
-  left: 668px;
-  top: 700px;
+  left: 742px;
+  top: 706px;
   width: 84px;
   height: 84px;
   cursor: pointer;
