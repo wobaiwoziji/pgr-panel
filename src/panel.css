@@ -452,9 +452,10 @@ body.preview #root {
 /* ── 收起态时间条 ───────────────────── */
 .dock {
   position: absolute;
+  /* 右端的球落在面板球坐标 (691,776) 上 */
   left: 138px;
-  top: 690px;
-  width: 480px;
+  top: 741px;
+  width: 576px;
   height: 70px;
   display: flex;
   align-items: center;
