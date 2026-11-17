@@ -118,6 +118,16 @@ body.preview .pk-toggle { display: none; }
   -webkit-app-region: drag;
 }
 
+/* 底沿厚度：与底板下边平行，而不是水平截断。 */
+.plane::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(96.6deg, rgba(102, 167, 222, 0.16), rgba(4, 29, 58, 0.34));
+  clip-path: polygon(11.3% 90.68%, 69.8% 96.48%, 69.8% 98.5%, 11.3% 92.7%);
+}
+
 .plane::after {
   content: "";
   position: absolute;
@@ -248,7 +258,7 @@ body.preview .pk-toggle { display: none; }
   position: absolute;
   left: 89px;
   top: 283px;
-  z-index: 2;
+  z-index: 1;
   width: 481px;
   height: 455px;
   padding-left: 20px;
@@ -260,6 +270,26 @@ body.preview .pk-toggle { display: none; }
 }
 
 .grid::-webkit-scrollbar { width: 0; height: 0; }
+
+/* 九宫格及文字统一位于下层，并与原网格同步滚动。 */
+.grid > .track .cell-label { visibility: hidden; }
+
+.grid-label-layer {
+  position: absolute;
+  left: 89px;
+  top: 283px;
+  z-index: 1;
+  width: 481px;
+  height: 455px;
+  padding-left: 20px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.grid-label-layer .cell { pointer-events: none; }
+.grid-label-layer .cell-box { visibility: hidden; }
+.grid-label-layer .cell-label,
+.grid-label-layer .row:nth-child(3n) .cell-label { visibility: visible; }
 
 .track { display: flex; flex-direction: column; gap: 16px; }
 
@@ -312,6 +342,12 @@ body.preview .pk-toggle { display: none; }
   -webkit-app-region: no-drag;
 }
 
+/* 蒙版的第三行只露黑色按钮；文字条保留占位，不显示在前景暗板下。 */
+.row:nth-child(3n) .cell:nth-child(1) { transform: translate(2px, 3px) skew(var(--v-cell-skew), var(--ry)); }
+.row:nth-child(3n) .cell:nth-child(2) { transform: translate(9px, 14px) skew(var(--v-cell-skew), var(--ry)); }
+.row:nth-child(3n) .cell:nth-child(3) { transform: translate(14px, 26px) skew(var(--v-cell-skew), var(--ry)); }
+.row:nth-child(3n) .cell-label { visibility: hidden; }
+
 .cell-box {
   position: relative;
   display: grid;
@@ -323,6 +359,14 @@ body.preview .pk-toggle { display: none; }
   transform: translate(var(--edx, 0px), var(--edy, 0px)) rotate(var(--erot, 0deg)) scale(var(--esc, 1)) skew(var(--eskx, 0deg), var(--esky, 0deg));
   transition: background 0.14s ease;
 }
+
+/* 参考帧实测：右列更高、整体略靠上（透视） */
+.cell:nth-child(1) .cell-box { height: calc(var(--v-box-h) + 2px); flex-basis: calc(var(--v-box-h) + 2px); }
+.cell:nth-child(2) .cell-box { height: calc(var(--v-box-h) + 6px); flex-basis: calc(var(--v-box-h) + 6px); }
+.cell:nth-child(3) .cell-box { height: calc(var(--v-box-h) + 11px); flex-basis: calc(var(--v-box-h) + 11px); }
+
+/* 参考帧里第一行黑块顶边在 283/281/279，整体比默认位置高 5px */
+.track { margin-top: -5px; }
 
 .cell-box img {
   width: 56%;
@@ -409,17 +453,32 @@ body.preview .pk-toggle { display: none; }
 
 .scroll-thumb:hover { box-shadow: 0 0 8px rgba(170, 220, 255, 0.7); }
 
-/* 四个快捷图标直接位于主底板上，不添加独立底栏。 */
+/* 前景暗色长条覆盖按钮下缘，快捷图标位于其最上层。 */
 .quick {
+  position: absolute;
+  inset: 0;
+  z-index: auto;
+  pointer-events: none;
+}
+
+.quick::before {
+  content: "";
   position: absolute;
   inset: 0;
   z-index: 3;
   pointer-events: none;
+  background:
+    linear-gradient(100deg, rgba(151, 190, 219, 0.08), transparent 48%),
+    linear-gradient(100deg, rgba(4, 13, 23, 0.52), rgba(1, 7, 16, 0.72)),
+    repeating-linear-gradient(0deg, rgba(145, 199, 244, 0.05) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(90deg, rgba(145, 199, 244, 0.04) 0 1px, transparent 1px 4px);
+  clip-path: polygon(8.29% 75.34%, 72.63% 82.4%, 70.66% 98.43%, 10.53% 92.6%);
+  filter: drop-shadow(0 10px 12px rgba(0, 16, 32, 0.28));
 }
 
 .quick button {
   position: absolute;
-  z-index: 1;
+  z-index: 5;
   width: 62px;
   height: 62px;
   border: 0;
@@ -430,21 +489,33 @@ body.preview .pk-toggle { display: none; }
   -webkit-app-region: no-drag;
 }
 
-.quick button:nth-child(1) { left: 107px; top: 742px; }
-.quick button:nth-child(2) { left: 215px; top: 759px; }
-.quick button:nth-child(3) { left: 327px; top: 774px; }
-.quick button:nth-child(4) { left: 449px; top: 786px; }
+.quick button:nth-child(1) {
+  left: 75.505px; top: 702.464px;
+  --quick-scale: 0.95; --quick-angle: 19deg; --quick-scale-x: 1.006; --quick-scale-y: 1.07;
+}
+.quick button:nth-child(2) {
+  left: 181.174px; top: 718.34px;
+  --quick-scale: 1.025; --quick-angle: 20deg; --quick-scale-x: 1.013; --quick-scale-y: 1.037;
+}
+.quick button:nth-child(3) {
+  left: 294.767px; top: 735.056px;
+  --quick-scale: 1.225; --quick-angle: 6deg; --quick-scale-x: 0.967; --quick-scale-y: 1.09;
+}
+.quick button:nth-child(4) {
+  left: 417.349px; top: 750.554px;
+  --quick-scale: 1.15; --quick-angle: 6deg; --quick-scale-x: 0.971; --quick-scale-y: 1.025;
+}
 
 .quick img {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  transform: translate(var(--edx, 0px), var(--edy, 0px)) rotate(var(--erot, 0deg)) scale(var(--esc, 1)) skew(var(--eskx, 0deg), var(--esky, 0deg));
+  transform: translate(var(--edx, 0px), var(--edy, 0px)) rotate(var(--erot, 0deg)) scale(var(--esc, 1)) skew(var(--eskx, 0deg), var(--esky, 0deg)) scale(var(--quick-scale-x, 1), var(--quick-scale-y, 1)) scale(var(--quick-scale, 1)) rotate(var(--quick-angle, 10deg));
   transition: transform 0.16s ease, filter 0.16s ease;
 }
 
 .quick button:hover img {
-  transform: translate(var(--edx, 0px), calc(var(--edy, 0px) - 2px)) rotate(var(--erot, 0deg)) scale(var(--esc, 1)) skew(var(--eskx, 0deg), var(--esky, 0deg));
+  transform: translate(var(--edx, 0px), calc(var(--edy, 0px) - 2px)) rotate(var(--erot, 0deg)) scale(var(--esc, 1)) skew(var(--eskx, 0deg), var(--esky, 0deg)) scale(var(--quick-scale-x, 1), var(--quick-scale-y, 1)) scale(var(--quick-scale, 1)) rotate(var(--quick-angle, 10deg));
   filter: drop-shadow(0 0 10px var(--accent));
 }
 

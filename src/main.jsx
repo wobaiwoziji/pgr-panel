@@ -213,6 +213,28 @@ export default function App() {
               </div>
             </div>
 
+            <div className="grid-label-layer" aria-hidden="true">
+              <div
+                className="track"
+                style={{ transform: `translate(${bar.top * 0.1373215723}px, ${-bar.top}px)` }}
+              >
+                {rows.map((row, ri) => (
+                  <div className="row" key={ri}>
+                    {row.map((b) => (
+                      <div className="cell" key={b.id}>
+                        <span className="cell-box" />
+                        {b.label ? (
+                          <span className="cell-label">
+                            <span className="cell-label-text">{b.label}</span>
+                          </span>
+                        ) : null}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <div className="scroll" data-ed="scroll">
               <div className="scroll-track" />
               <div
