@@ -3,8 +3,10 @@ import { createRoot } from "react-dom/client";
 import "./panel.css";
 import "./tuner.css";
 import "./editor.css";
+import "./picker.css";
 import Tuner from "./Tuner.jsx";
 import Editor from "./Editor.jsx";
+import Picker from "./Picker.jsx";
 
 const ASSET = "./assets/_game/icons/";
 const WEEK = ["日", "一", "二", "三", "四", "五", "六"];
@@ -234,6 +236,7 @@ export default function App() {
       {toast && <div className="toast">{toast}</div>}
       {(!window.pgr || location.search.includes("tune")) && <Tuner />}
       {(!window.pgr || location.search.includes("edit")) && <Editor />}
+      {(!window.pgr || location.search.includes("pick")) && <Picker />}
     </div>
   );
 }
