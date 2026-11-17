@@ -329,7 +329,7 @@ body.preview #root {
 .quick {
   position: absolute;
   isolation: isolate; /* 让背后的黑条压在底板之上、图标之下 */
-  left: -22px;
+  left: -50px;
   bottom: 34px;
   width: 456px;
   display: flex;
