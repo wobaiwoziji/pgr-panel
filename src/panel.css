@@ -107,6 +107,7 @@ body.preview #root {
   height: 892px;
   z-index: 0;
   pointer-events: none;
+  filter: blur(16px);  /* 三角是硬边裁切，模糊够大才不会露出直线和尖角 */
 }
 
 /* 上：底边 = 面板顶边 (140,74)-(620,74)，顶点 = 镜头中心 (784,748) */
@@ -139,6 +140,7 @@ body.preview #root {
     repeating-linear-gradient(0deg, rgba(160, 210, 255, 0.07) 0 1px, transparent 1px 10px),
     repeating-linear-gradient(90deg, rgba(160, 210, 255, 0.055) 0 1px, transparent 1px 10px);
   border-radius: 44px;
+  overflow: hidden;
   filter: blur(2px);
   -webkit-app-region: drag;
 }
@@ -387,6 +389,8 @@ body.preview #root {
   top: -12px;
   bottom: -10px;
   background: rgba(4, 8, 15, 0.58);
+  border-radius: 14px;
+  filter: blur(3px);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(180, 215, 255, 0.12);
   z-index: -1;
 }
