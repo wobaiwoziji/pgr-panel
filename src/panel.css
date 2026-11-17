@@ -198,10 +198,10 @@ body.preview #root {
 /* ── 九宫格：普通 grid，无任何 transform ── */
 .grid {
   position: absolute;
-  left: 32px;
-  top: 202px;
-  width: 416px;
-  height: 432px;
+  left: 30px;
+  top: 196px;
+  width: 420px;
+  height: 486px;
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -216,13 +216,13 @@ body.preview #root {
 .track {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 18px;
 }
 
 .row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  column-gap: 16px;
+  column-gap: 26px;
 }
 
 .cell {
@@ -242,7 +242,7 @@ body.preview #root {
   display: grid;
   place-items: center;
   width: 100%;
-  height: 100px;
+  height: 118px;
   background: var(--cell);
   transition: background 0.14s ease;
 }
@@ -258,7 +258,9 @@ body.preview #root {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 36px;
+  width: 92%;
+  margin: 0 auto;
+  height: 32px;
   background: var(--label-bg);
   color: var(--label-fg);
   font-size: 17px;
@@ -300,9 +302,9 @@ body.preview #root {
 .scrollbar {
   position: absolute;
   left: 452px;
-  top: 202px;
+  top: 196px;
   width: 10px;
-  height: 432px;
+  height: 486px;
   -webkit-app-region: no-drag;
 }
 
@@ -327,7 +329,7 @@ body.preview #root {
 .quick {
   position: absolute;
   left: 12px;
-  bottom: 14px;
+  bottom: 6px;
   width: 456px;
   display: flex;
   align-items: center;
@@ -343,8 +345,8 @@ body.preview #root {
 }
 
 .quick img {
-  width: 76px;
-  height: 76px;
+  width: 56px;
+  height: 56px;
   object-fit: contain;
   transition: transform 0.16s ease, filter 0.16s ease;
 }
