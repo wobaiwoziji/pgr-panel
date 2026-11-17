@@ -1,0 +1,90 @@
+/* ── 调参面板（仅预览） ─────────────── */
+.tuner-toggle {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 50;
+  padding: 8px 14px;
+  border: 1px solid rgba(150, 200, 255, 0.35);
+  border-radius: 8px;
+  background: rgba(12, 20, 32, 0.88);
+  color: #cfe6ff;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.tuner {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 50;
+  width: 320px;
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  padding: 12px;
+  border: 1px solid rgba(150, 200, 255, 0.28);
+  border-radius: 10px;
+  background: rgba(10, 16, 26, 0.94);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+  color: #cfe6ff;
+  font-size: 12px;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+}
+
+.tuner-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: #9fd0ff;
+}
+
+.tuner-head button {
+  border: 0;
+  background: none;
+  color: #cfe6ff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.tuner-row {
+  display: grid;
+  grid-template-columns: 118px 1fr 54px;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 0;
+}
+
+.tuner-name {
+  color: rgba(210, 232, 255, 0.78);
+}
+
+.tuner-row input[type="range"] {
+  width: 100%;
+  accent-color: #5aa9f0;
+}
+
+.tuner-val {
+  text-align: right;
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+}
+
+.tuner-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.tuner-actions button {
+  flex: 1;
+  padding: 7px 0;
+  border: 1px solid rgba(150, 200, 255, 0.3);
+  border-radius: 6px;
+  background: rgba(30, 60, 100, 0.5);
+  color: #dcefff;
+  font-size: 12px;
+  cursor: pointer;
+}
