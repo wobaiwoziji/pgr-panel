@@ -152,6 +152,7 @@ export default function App() {
           <div className="tri tri-bottom" />
 
           <div className="panel">
+            <div className="plane-shadow" />
             <div className="plane" data-ed="plane" />
 
             <div className="hed-shadow" />
