@@ -472,7 +472,7 @@ body.preview #root {
   top: 50%;
   width: 76px;
   height: 76px;
-  transform: translateY(-50%) skewX(6deg);
+  transform: translateY(-50%) skewX(-12deg) rotate(5deg);
   pointer-events: none;
 }
 
