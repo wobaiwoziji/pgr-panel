@@ -6,14 +6,14 @@
   --scale: 1;
 
   /* ── 可视化调参变量（按 T 打开调参面板）── */
-  --v-cell-skew: -6deg;
+  --v-cell-skew: -7.95deg;
   --v-panel-skew: -7.95deg;
-  --v-hed-tilt: -4.5deg;
-  --v-media-tilt: -3.5deg;
-  --v-row1: 0.94deg;
-  --v-row2: 1.54deg;
-  --v-row3: 2.1deg;
-  --v-row4: 2.4deg;
+  --v-hed-tilt: 0deg;
+  --v-media-tilt: 0deg;
+  --v-row1: 0deg;
+  --v-row2: 0deg;
+  --v-row3: 0deg;
+  --v-row4: 0deg;
   --v-scroll-x: 556px;
   --v-box-h: 96px;
   --v-label-h: 38px;
@@ -334,7 +334,7 @@ body.preview #root {
   display: grid;
   grid-template-columns: 103px 112px 121px;
   column-gap: 24px;
-  --ry: 1deg;
+  --ry: 0deg;
 }
 
 /* 行越往下，横向斜率越大（参考帧实测 0.94° / 1.54° / 2.1°） */

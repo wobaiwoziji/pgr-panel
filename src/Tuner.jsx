@@ -50,11 +50,14 @@ export default function Tuner() {
   }, []);
 
   useEffect(() => {
+    // 只有打开调参面板时才写入覆盖值，避免 localStorage 里的旧值
+    // 在不知情的情况下把 CSS 改回去
+    if (!show) return;
     for (const c of CONTROLS) {
       document.documentElement.style.setProperty(c.key, `${vals[c.key]}${c.unit}`);
     }
     localStorage.setItem(STORE, JSON.stringify(vals));
-  }, [vals]);
+  }, [vals, show]);
 
   if (!show) {
     return (
