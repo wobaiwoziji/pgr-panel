@@ -10,7 +10,7 @@
     "banner": "宿舍-委托系统：队伍回归(8)",
     "media": {
       "status": "正在播放",
-      "title": "可Linda 制作：战双帕弥什"
+      "title": "GhostFinal歌手： Kinoko蘑菇"
     },
     "buttons": [
       { "id": "website", "label": "官网主页", "icon": "icon_website" },
@@ -19,9 +19,9 @@
       { "id": "cloud_gaming", "label": "云游戏", "icon": "icon_cloud_gaming" },
       { "id": "wallpaper", "label": "官方壁纸", "icon": "icon_wallpaper" },
       { "id": "comic", "label": "官方漫画", "icon": "icon_comic" },
-      { "id": "download", "label": "资源下载", "icon": "icon_download" },
-      { "id": "export", "label": "编队导出", "icon": "icon_export" },
-      { "id": "strategy", "label": "作战攻略", "icon": "icon_strategy" },
+      { "id": "download", "label": "", "icon": "icon_download" },
+      { "id": "export", "label": "", "icon": "icon_export" },
+      { "id": "strategy", "label": "", "icon": "icon_strategy" },
       { "id": "community", "label": "官方社区", "icon": "icon_friend" },
       { "id": "support", "label": "客服中心", "icon": "icon_group" },
       { "id": "codes", "label": "兑换码", "icon": "icon_export" },

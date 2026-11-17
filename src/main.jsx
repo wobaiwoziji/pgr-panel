@@ -4,9 +4,11 @@ import "./panel.css";
 import "./tuner.css";
 import "./editor.css";
 import "./picker.css";
+import "./compare.css";
 import Tuner from "./Tuner.jsx";
 import Editor from "./Editor.jsx";
 import Picker from "./Picker.jsx";
+import Compare from "./Compare.jsx";
 
 const ASSET = "./assets/_game/icons/";
 const WEEK = ["日", "一", "二", "三", "四", "五", "六"];
@@ -106,7 +108,17 @@ export default function App() {
     rows.push((panel.buttons || []).slice(i, i + 3));
   }
 
-  const GRID_H = 426;
+  const GRID_H = 413;
+
+  useEffect(() => {
+    const el = gridRef.current;
+    if (!el || !el.scrollHeight) return;
+    setBar({
+      top: el.scrollTop,
+      range: Math.max(0, el.scrollHeight - el.clientHeight),
+      ratio: el.clientHeight / el.scrollHeight,
+    });
+  }, [panel.buttons]);
 
   const onScroll = (e) => {
     const el = e.currentTarget;
@@ -177,7 +189,7 @@ export default function App() {
                 {rows.map((row, ri) => (
                   <div className="row" key={ri}>
                     {row.map((b) => (
-                      <button className="cell" key={b.id} onClick={(e) => run(e, b.id)}>
+                      <button className="cell" key={b.id} onClick={(e) => run(e, b.id)} aria-label={b.label || b.id}>
                         <span className="cell-box" data-ed={`box-${b.id}`}>
                           <img
                             src={ASSET + b.icon + ".png"}
@@ -188,7 +200,7 @@ export default function App() {
                         </span>
                         {b.label ? (
                           <span className="cell-label" data-ed={`label-${b.id}`}>
-                            {b.label}
+                            <span className="cell-label-text">{b.label}</span>
                           </span>
                         ) : null}
                       </button>
@@ -223,11 +235,11 @@ export default function App() {
         </div>
       </div>
 
-      <div className="lens hit" data-ed="lens" onClick={toggle}>
+      <button type="button" className="lens hit" data-ed="lens" onClick={toggle} aria-label={open ? "收起面板" : "展开面板"}>
         <i className="l-ring" />
         <i className="l-petals" />
         <i className="l-core" />
-      </div>
+      </button>
 
       <button data-ed="dock" className={`dock hit ${open ? "is-hidden" : ""}`} onClick={toggle}>
         <span className="dock-time">{time}</span>
@@ -237,6 +249,7 @@ export default function App() {
       {(!window.pgr || location.search.includes("tune")) && <Tuner />}
       {(!window.pgr || location.search.includes("edit")) && <Editor />}
       {(!window.pgr || location.search.includes("pick")) && <Picker />}
+      {location.search.includes("compare") && <Compare />}
     </div>
   );
 }
