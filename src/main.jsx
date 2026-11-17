@@ -213,6 +213,11 @@ export default function App() {
 
       <button className={`dock hit ${open ? "is-hidden" : ""}`} data-ed="dock" onClick={toggle}>
         <span className="dock-time">{time}</span>
+        <span className="dock-lens">
+          <i className="l-ring" />
+          <i className="l-petals" />
+          <i className="l-core" />
+        </span>
       </button>
 
       {toast && <div className="toast">{toast}</div>}
