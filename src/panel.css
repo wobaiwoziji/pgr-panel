@@ -9,7 +9,7 @@
   --scale: 1;
 
   /* ←← 唯一的角度开关 */
-  --tilt-transform: perspective(1300px) rotateY(-9deg) rotateX(3deg) rotateZ(-1.2deg);
+  --tilt-transform: perspective(900px) rotateY(-16deg) rotateX(6deg) rotateZ(-2deg) scale(0.82) translate(-124px, -84px);
   --tilt-origin: 62% 42%;
 
   --cell: #05070c;
