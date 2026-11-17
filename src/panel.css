@@ -237,7 +237,7 @@ body.preview #root {
 /* ── 九宫格：普通 grid，无任何 transform ── */
 .grid {
   position: absolute;
-  left: 1px;
+  left: 8px;
   top: 196px;
   width: 420px;
   height: 438px;
@@ -340,7 +340,7 @@ body.preview #root {
 /* ── 滚动条（正矩形，跟着 .tilt 一起斜）── */
 .scrollbar {
   position: absolute;
-  left: 423px;
+  left: 430px;
   top: 196px;
   width: 10px;
   height: 438px;
