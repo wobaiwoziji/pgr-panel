@@ -328,6 +328,7 @@ body.preview #root {
 /* ── 底部四个图标 ───────────────────── */
 .quick {
   position: absolute;
+  isolation: isolate; /* 让背后的黑条压在底板之上、图标之下 */
   left: 12px;
   bottom: 10px;
   width: 456px;
@@ -336,12 +337,26 @@ body.preview #root {
   justify-content: space-around;
 }
 
+/* 图标背后的半透明黑条 */
+.quick::before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  right: -10px;
+  top: -12px;
+  bottom: -10px;
+  background: rgba(4, 8, 15, 0.58);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(180, 215, 255, 0.12);
+  z-index: -1;
+}
+
 .quick button {
   border: 0;
   background: none;
   padding: 4px;
   cursor: pointer;
   -webkit-app-region: no-drag;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45));
 }
 
 .quick img {
