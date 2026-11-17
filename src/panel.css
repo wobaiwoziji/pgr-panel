@@ -135,10 +135,10 @@ body.preview #root {
   position: absolute;
   inset: 0;
   background: linear-gradient(178deg, rgba(6, 40, 96, 0.62) 0%, rgba(40, 120, 214, 0.42) 48%, rgba(140, 215, 255, 0.55) 100%),
-    repeating-conic-gradient(from 0deg, rgba(70, 130, 200, 0.85) 0% 25%, transparent 0% 50%) 0 0 / 7px 7px;
+    repeating-conic-gradient(from 0deg, rgba(70, 130, 200, 0.5) 0% 25%, transparent 0% 50%) 0 0 / 16px 16px;
   border-radius: 18px;
   overflow: hidden;
-  filter: blur(2px);
+  filter: blur(0.7px);
   -webkit-app-region: drag;
 }
 
