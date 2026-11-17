@@ -9,7 +9,7 @@
   --scale: 1;
 
   /* ←← 唯一的角度开关 */
-  --tilt-transform: perspective(850px) rotateY(-18deg) rotateX(6deg) rotateZ(-3.2deg) scale(0.82) translate(-124px, -40px);
+  --tilt-transform: perspective(850px) rotateY(-18deg) rotateX(6deg) rotateZ(3.4deg) scale(0.9) translate(-58px, 10px);
   --tilt-origin: 62% 42%;
 
   --cell: #05070c;
@@ -329,8 +329,8 @@ body.preview #root {
 .quick {
   position: absolute;
   isolation: isolate; /* 让背后的黑条压在底板之上、图标之下 */
-  left: -52px;
-  bottom: 40px;
+  left: 6px;
+  bottom: 34px;
   width: 456px;
   display: flex;
   align-items: center;
