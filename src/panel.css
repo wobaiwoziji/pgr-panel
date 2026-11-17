@@ -98,21 +98,24 @@ body.preview #root {
 /* ── 投影轨迹：两片三角，边贴面板上下沿，角连镜头中心 ── */
 .tri {
   position: absolute;
-  inset: 0;
+  left: 0;
+  top: 0;
+  width: 840px;  /* 比画布宽，保证顶点不被裁掉 */
+  height: 892px;
   z-index: 0;
   pointer-events: none;
 }
 
 /* 上：底边 = 面板顶边 (140,74)-(620,74)，顶点 = 镜头中心 (784,748) */
 .tri-top {
-  background: linear-gradient(200deg, rgba(150, 205, 255, 0.2) 0%, rgba(90, 160, 225, 0.07) 55%, transparent 100%);
-  clip-path: polygon(18.4% 8.3%, 81.6% 8.3%, 103.2% 83.9%);
+  background: linear-gradient(200deg, rgba(150, 205, 255, 0.34) 0%, rgba(90, 160, 225, 0.12) 55%, transparent 100%);
+  clip-path: polygon(16.67% 8.3%, 73.81% 8.3%, 93.33% 83.86%);
 }
 
 /* 下：底边 = 面板底边 (140,846)-(620,846)，顶点同上 */
 .tri-bottom {
-  background: linear-gradient(20deg, rgba(18, 56, 104, 0.34) 0%, rgba(28, 78, 138, 0.1) 60%, transparent 100%);
-  clip-path: polygon(18.4% 94.8%, 81.6% 94.8%, 103.2% 83.9%);
+  background: linear-gradient(20deg, rgba(18, 56, 104, 0.5) 0%, rgba(28, 78, 138, 0.16) 60%, transparent 100%);
+  clip-path: polygon(16.67% 94.84%, 73.81% 94.84%, 93.33% 83.86%);
 }
 
 /* ── 平面布局：480×745，居中 ────────── */
