@@ -108,7 +108,7 @@ export default function App() {
     rows.push((panel.buttons || []).slice(i, i + 3));
   }
 
-  const GRID_H = 413;
+  const GRID_H = 455;
 
   useEffect(() => {
     const el = gridRef.current;
@@ -185,7 +185,10 @@ export default function App() {
             </div>
 
             <div className="grid" ref={gridRef} onScroll={onScroll}>
-              <div className="track">
+              <div
+                className="track"
+                style={{ transform: `translateX(${bar.top * 0.1373215723}px)` }}
+              >
                 {rows.map((row, ri) => (
                   <div className="row" key={ri}>
                     {row.map((b) => (

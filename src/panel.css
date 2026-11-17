@@ -138,17 +138,17 @@ body.preview .pk-toggle { display: none; }
   filter: drop-shadow(0 0 2px rgba(120, 195, 255, 0.32));
 }
 
-/* 顶部白条：按参考帧的四角逐点还原。 */
+/* 顶部白条：长边互相平行，短边与全息底板侧边同向倾斜。 */
 .hed {
   position: absolute;
   left: 129px;
   top: 64px;
   z-index: 3;
   width: 449px;
-  height: 66px;
+  height: 70px;
   background: #f4f5f6;
   color: #15161b;
-  clip-path: polygon(0.4% 70%, 100% 0, 99.1% 53%, 0 100%);
+  clip-path: polygon(4.65px 36px, 100% 0, calc(100% - 4.65px) 34px, 0 70px);
   transform: translate(var(--edx, 0px), var(--edy, 0px)) rotate(var(--erot, 0deg)) scale(var(--esc, 1)) skew(var(--eskx, 0deg), var(--esky, 0deg));
   filter: drop-shadow(0 3px 1px rgba(0, 0, 0, 0.16));
 }
@@ -243,14 +243,15 @@ body.preview .pk-toggle { display: none; }
   text-overflow: ellipsis;
 }
 
-/* 容器覆盖完整透视宽度，三行用正位移避免左侧裁切。 */
+/* 左侧补偿只扩大裁切区域，不改变任何按钮的排版坐标。 */
 .grid {
   position: absolute;
-  left: 109px;
+  left: 89px;
   top: 283px;
   z-index: 2;
-  width: 461px;
-  height: 413px;
+  width: 481px;
+  height: 455px;
+  padding-left: 20px;
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -262,35 +263,39 @@ body.preview .pk-toggle { display: none; }
 
 .track { display: flex; flex-direction: column; gap: 16px; }
 
+/* 每行沿底板左侧斜边定位；滚动时由 .track 做反向水平补偿。 */
 .row {
   display: grid;
   grid-template-columns: 100px 110px 124px;
   column-gap: 24px;
   width: max-content;
   --ry: var(--v-row1);
-  transform: translateX(37px);
+  transform: translateX(41.974px);
   transform-origin: left top;
 }
 
 .row:nth-child(2) {
   --ry: var(--v-row2);
   grid-template-columns: 102px 113px 126px;
-  transform: translateX(20px);
+  transform: translateX(20.765px);
 }
 
 .row:nth-child(3) {
   --ry: var(--v-row3);
   grid-template-columns: 101px 116px 129px;
   column-gap: 20px;
-  transform: translateX(0);
+  transform: translateX(-0.454px);
 }
 
 .row:nth-child(n + 4) {
   --ry: var(--v-row4);
   grid-template-columns: 101px 116px 129px;
   column-gap: 20px;
-  transform: translateX(0);
 }
+
+.row:nth-child(4) { transform: translateX(-21.739px); }
+.row:nth-child(5) { transform: translateX(-43.024px); }
+.row:nth-child(6) { transform: translateX(-64.309px); }
 
 .cell {
   display: flex;
@@ -377,7 +382,7 @@ body.preview .pk-toggle { display: none; }
   top: 283px;
   z-index: 4;
   width: 5px;
-  height: 426px;
+  height: 455px;
   transform: translate(var(--edx, 0px), var(--edy, 0px)) rotate(var(--erot, 0deg)) scale(var(--esc, 1)) skew(var(--eskx, 0deg), var(--esky, 0deg)) skew(var(--v-panel-skew));
   pointer-events: none;
 }
@@ -425,10 +430,10 @@ body.preview .pk-toggle { display: none; }
   -webkit-app-region: no-drag;
 }
 
-.quick button:nth-child(1) { left: 72px; top: 704px; }
-.quick button:nth-child(2) { left: 180px; top: 721px; }
-.quick button:nth-child(3) { left: 292px; top: 736px; }
-.quick button:nth-child(4) { left: 414px; top: 748px; }
+.quick button:nth-child(1) { left: 107px; top: 742px; }
+.quick button:nth-child(2) { left: 215px; top: 759px; }
+.quick button:nth-child(3) { left: 327px; top: 774px; }
+.quick button:nth-child(4) { left: 449px; top: 786px; }
 
 .quick img {
   width: 100%;
@@ -507,10 +512,10 @@ body.preview .pk-toggle { display: none; }
 .dock {
   position: absolute;
   left: 268px;
-  top: 733px;
+  top: 739px;
   z-index: 2;
   width: 440px;
-  height: 118px;
+  height: 105px;
   border: 0;
   padding: 22px 0 0 58px;
   font: inherit;
@@ -518,10 +523,10 @@ body.preview .pk-toggle { display: none; }
   cursor: pointer;
   display: flex;
   align-items: flex-start;
-  clip-path: polygon(0 8%, 100% 26%, 100% 100%, 0 100%);
+  clip-path: polygon(0 0, 100% 26.7%, 100% 100%, 0 74.3%);
   -webkit-app-region: no-drag;
   background:
-    linear-gradient(101deg, rgba(58, 118, 186, 0.48), rgba(40, 88, 148, 0.38) 34%, rgba(26, 58, 104, 0.46)),
+    linear-gradient(101deg, rgba(48, 103, 165, 0.54), rgba(33, 77, 130, 0.42) 42%, rgba(24, 55, 99, 0.5)),
     repeating-linear-gradient(0deg, rgba(150, 200, 250, 0.045) 0 1px, transparent 1px 4px),
     repeating-linear-gradient(90deg, rgba(150, 200, 250, 0.035) 0 1px, transparent 1px 4px);
 }
@@ -530,7 +535,8 @@ body.preview .pk-toggle { display: none; }
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(120, 178, 236, 0.2), rgba(120, 178, 236, 0.03) 42%, transparent 66%);
+  background: linear-gradient(100deg, rgba(126, 174, 219, 0.2), rgba(92, 141, 195, 0.08) 58%, transparent 78%);
+  clip-path: polygon(0 0, 46% 12%, 63% 17%, 52% 89%, 0 74.3%);
 }
 
 .dock.is-hidden { opacity: 0; pointer-events: none; }
