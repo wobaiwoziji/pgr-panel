@@ -35,7 +35,7 @@ function useClock() {
 
 export default function App() {
   const [cfg, setCfg] = useState(FALLBACK);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(() => !window.pgr);
   const [toast, setToast] = useState("");
   const [bar, setBar] = useState({ top: 0, range: 0, ratio: 1 });
   const { time, date } = useClock();
@@ -44,13 +44,13 @@ export default function App() {
 
   useEffect(() => {
     let alive = true;
-    const load = async () => {
+    (async () => {
       if (window.pgr) {
         const c = await window.pgr.getConfig();
         if (!alive) return;
         if (c?.panel) setCfg(c);
         const s = c?.runtime?.scale;
-        if (s && s > 0 && s !== 1) document.documentElement.style.setProperty("--scale", String(s));
+        if (s > 0 && s !== 1) document.documentElement.style.setProperty("--scale", String(s));
         return;
       }
       try {
@@ -60,15 +60,15 @@ export default function App() {
           if (alive && c?.panel) setCfg(c);
         }
       } catch {
-        /* 预览用内置数据 */
+        /* 预览 */
       }
-    };
-    load();
+    })();
     return () => {
       alive = false;
     };
   }, []);
 
+  // 点击穿透：只有指针落在真实内容上才接管
   useEffect(() => {
     if (!window.pgr) return;
     let inside = null;
@@ -93,60 +93,12 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === "Escape") setOpen(false);
-    };
+    const onKey = (e) => e.key === "Escape" && setOpen(false);
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
   const toggle = useCallback(() => setOpen((v) => !v), []);
-
-  // ── 九宫格：滚轮滚动 + 白色滑块的滚动条 ──
-  const rows = [];
-  for (let i = 0; i < (panel.buttons || []).length; i += 3) {
-    rows.push((panel.buttons || []).slice(i, i + 3));
-  }
-
-  const GRID_H = 455;
-
-  useEffect(() => {
-    const el = gridRef.current;
-    if (!el || !el.scrollHeight) return;
-    setBar({
-      top: el.scrollTop,
-      range: Math.max(0, el.scrollHeight - el.clientHeight),
-      ratio: el.clientHeight / el.scrollHeight,
-    });
-  }, [panel.buttons]);
-
-  const onScroll = (e) => {
-    const el = e.currentTarget;
-    const range = Math.max(1, el.scrollHeight - el.clientHeight);
-    setBar({ top: el.scrollTop, range, ratio: el.clientHeight / el.scrollHeight });
-  };
-
-  const thumbH = Math.max(40, GRID_H * bar.ratio);
-  const thumbTop = bar.range > 0 ? (bar.top / bar.range) * (GRID_H - thumbH) : 0;
-
-  const dragThumb = (e) => {
-    const el = gridRef.current;
-    if (!el) return;
-    e.preventDefault();
-    const scale = el.getBoundingClientRect().height / el.offsetHeight || 1;
-    const startY = e.clientY;
-    const startTop = el.scrollTop;
-    const maxTop = Math.max(1, GRID_H - thumbH);
-    const move = (ev) => {
-      el.scrollTop = startTop + (((ev.clientY - startY) / scale) / maxTop) * bar.range;
-    };
-    const up = () => {
-      window.removeEventListener("pointermove", move);
-      window.removeEventListener("pointerup", up);
-    };
-    window.addEventListener("pointermove", move);
-    window.addEventListener("pointerup", up);
-  };
 
   const run = async (e, id) => {
     e.stopPropagation();
@@ -162,48 +114,67 @@ export default function App() {
     }
   };
 
+  const rows = [];
+  for (let i = 0; i < (panel.buttons || []).length; i += 3) rows.push(panel.buttons.slice(i, i + 3));
+
+  const GRID_H = 468;
+  const onScroll = (e) => {
+    const el = e.currentTarget;
+    const range = Math.max(1, el.scrollHeight - el.clientHeight);
+    setBar({ top: el.scrollTop, range, ratio: el.clientHeight / el.scrollHeight });
+  };
+  const thumbH = Math.max(56, GRID_H * bar.ratio);
+  const thumbTop = bar.range > 1 ? (bar.top / bar.range) * (GRID_H - thumbH) : 0;
+  const dragThumb = (e) => {
+    const el = gridRef.current;
+    if (!el) return;
+    e.preventDefault();
+    const scale = el.getBoundingClientRect().height / el.offsetHeight || 1;
+    const y0 = e.clientY;
+    const t0 = el.scrollTop;
+    const max = Math.max(1, GRID_H - thumbH);
+    const move = (ev) => (el.scrollTop = t0 + ((ev.clientY - y0) / scale / max) * bar.range);
+    const up = () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+    };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+  };
+
   return (
     <div className="stage">
       <div className={`holo hit ${open ? "is-open" : ""}`}>
-        <div className="tilt">
-          <div className="plane" data-ed="plane" />
-          <i className="ray" style={{ left: 638, top: 94, width: 718, transform: "rotate(89.68deg)" }} />
-          <i className="ray" style={{ left: 536, top: 865, width: 118, transform: "rotate(-26.6deg)" }} />
+        {/* 唯一做倾斜的一层；里面全是正矩形 */}
+        <div className="tilt" data-ed="tilt">
+          <div className="panel">
+            <div className="plane" data-ed="plane" />
 
-          <div className="hed" data-ed="hed">
-            <span className="hed-time">{time}</span>
-            <span className="hed-date">{date}</span>
-          </div>
-
-          <div className="body">
-            <div className="media" data-ed="media">
-              <div className="cover" />
-              <div className="media-text">
-                <div className="media-status">{panel.media?.status}</div>
-                <div className="media-title">{panel.media?.title}</div>
-              </div>
+            <div className="hed hit" data-ed="hed">
+              <span className="hed-time">{time}</span>
+              <span className="hed-date">{date}</span>
             </div>
 
-            <div className="grid" ref={gridRef} onScroll={onScroll}>
-              <div
-                className="track"
-                style={{ transform: `translateX(${bar.top * 0.1373215723}px)` }}
-              >
+            <div className="media hit" data-ed="media">
+              <span className="cover" />
+              <span className="media-text">
+                <b>{panel.media?.status}</b>
+                <i>{panel.media?.title}</i>
+              </span>
+            </div>
+
+            <div className="grid hit" ref={gridRef} onScroll={onScroll}>
+              <div className="track">
                 {rows.map((row, ri) => (
                   <div className="row" key={ri}>
                     {row.map((b) => (
-                      <button className="cell" key={b.id} onClick={(e) => run(e, b.id)} aria-label={b.label || b.id}>
+                      <button className="cell" key={b.id} onClick={(e) => run(e, b.id)}>
                         <span className="cell-box" data-ed={`box-${b.id}`}>
-                          <img
-                            src={ASSET + b.icon + ".png"}
-                            alt=""
-                            draggable="false"
-                            data-ed={`icon-${b.id}`}
-                          />
+                          <img src={ASSET + b.icon + ".png"} alt="" draggable="false" data-ed={`icon-${b.id}`} />
                         </span>
                         {b.label ? (
                           <span className="cell-label" data-ed={`label-${b.id}`}>
-                            <span className="cell-label-text">{b.label}</span>
+                            {b.label}
                           </span>
                         ) : null}
                       </button>
@@ -213,60 +184,29 @@ export default function App() {
               </div>
             </div>
 
-            <div className="grid-label-layer" aria-hidden="true">
-              <div
-                className="track"
-                style={{ transform: `translate(${bar.top * 0.1373215723}px, ${-bar.top}px)` }}
-              >
-                {rows.map((row, ri) => (
-                  <div className="row" key={ri}>
-                    {row.map((b) => (
-                      <div className="cell" key={b.id}>
-                        <span className="cell-box" />
-                        {b.label ? (
-                          <span className="cell-label">
-                            <span className="cell-label-text">{b.label}</span>
-                          </span>
-                        ) : null}
-                      </div>
-                    ))}
-                  </div>
-                ))}
-              </div>
+            <div className="scrollbar hit" data-ed="scroll">
+              <i className="sb-track" />
+              <i className="sb-thumb" style={{ top: thumbTop, height: thumbH }} onPointerDown={dragThumb} />
             </div>
 
-            <div className="scroll" data-ed="scroll">
-              <div className="scroll-track" />
-              <div
-                className="scroll-thumb"
-                style={{ top: thumbTop, height: thumbH }}
-                onPointerDown={dragThumb}
-              />
-            </div>
-
-            <div className="quick">
+            <div className="quick hit" data-ed="quick">
               {(panel.quick || []).map((q) => (
                 <button key={q.id} onClick={(e) => run(e, q.id)} title={q.id}>
-                  <img
-                    src={ASSET + q.icon + ".png"}
-                    alt=""
-                    draggable="false"
-                    data-ed={`quick-${q.id}`}
-                  />
+                  <img src={ASSET + q.icon + ".png"} alt="" draggable="false" data-ed={`quick-${q.id}`} />
                 </button>
               ))}
             </div>
           </div>
         </div>
+
+        <div className="lens hit" data-ed="lens" onClick={toggle}>
+          <i className="l-ring" />
+          <i className="l-petals" />
+          <i className="l-core" />
+        </div>
       </div>
 
-      <button type="button" className="lens hit" data-ed="lens" onClick={toggle} aria-label={open ? "收起面板" : "展开面板"}>
-        <i className="l-ring" />
-        <i className="l-petals" />
-        <i className="l-core" />
-      </button>
-
-      <button data-ed="dock" className={`dock hit ${open ? "is-hidden" : ""}`} onClick={toggle}>
+      <button className={`dock hit ${open ? "is-hidden" : ""}`} data-ed="dock" onClick={toggle}>
         <span className="dock-time">{time}</span>
       </button>
 
