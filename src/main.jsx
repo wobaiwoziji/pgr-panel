@@ -154,6 +154,7 @@ export default function App() {
           <div className="panel">
             <div className="plane" data-ed="plane" />
 
+            <div className="hed-shadow" />
             <div className="hed hit" data-ed="hed">
               <span className="hed-time">{time}</span>
               <span className="hed-date">{date}</span>
