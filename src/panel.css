@@ -135,7 +135,7 @@ body.preview #root {
 .plane {
   position: absolute;
   inset: 0;
-  background: linear-gradient(178deg, rgba(30, 96, 180, 0.5) 0%, rgba(52, 140, 236, 0.42) 46%, rgba(72, 168, 252, 0.46) 100%),
+  background: linear-gradient(178deg, rgba(14, 58, 124, 0.56) 0%, rgba(46, 130, 226, 0.42) 48%, rgba(104, 196, 255, 0.5) 100%),
     repeating-linear-gradient(0deg, rgba(160, 210, 255, 0.06) 0 1px, transparent 1px 4px),
     repeating-linear-gradient(90deg, rgba(160, 210, 255, 0.045) 0 1px, transparent 1px 4px);
   -webkit-app-region: drag;
