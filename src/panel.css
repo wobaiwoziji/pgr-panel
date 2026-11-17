@@ -164,7 +164,7 @@ body.preview #root {
   position: absolute;
   left: 0;
   top: 0;
-  transform: translate(-21px, -7px);
+  transform: translate(-16px, -7px);
   width: 100%;
   height: 50px;
   display: flex;
