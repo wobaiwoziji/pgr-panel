@@ -9,7 +9,7 @@
   --scale: 1;
 
   /* ←← 唯一的角度开关 */
-  --tilt-transform: perspective(900px) rotateY(-16deg) rotateX(6deg) rotateZ(-2deg) scale(0.82) translate(-124px, -84px);
+  --tilt-transform: perspective(900px) rotateY(-16deg) rotateX(6deg) rotateZ(-2deg) scale(0.82) translate(-124px, -40px);
   --tilt-origin: 62% 42%;
 
   --cell: #05070c;
@@ -357,8 +357,8 @@ body.preview #root {
 /* ── 投影镜头（在倾斜层外，正对屏幕）── */
 .lens {
   position: absolute;
-  left: 618px;
-  top: 750px;
+  left: 636px;
+  top: 700px;
   width: 84px;
   height: 84px;
   cursor: pointer;

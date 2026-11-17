@@ -197,12 +197,13 @@ export default function App() {
               ))}
             </div>
           </div>
-        </div>
 
-        <div className="lens hit" data-ed="lens" onClick={toggle}>
-          <i className="l-ring" />
-          <i className="l-petals" />
-          <i className="l-core" />
+          {/* 镜头跟着面板一起，贴在右下角 */}
+          <div className="lens hit" data-ed="lens" onClick={toggle}>
+            <i className="l-ring" />
+            <i className="l-petals" />
+            <i className="l-core" />
+          </div>
         </div>
       </div>
 
