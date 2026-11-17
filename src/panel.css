@@ -374,7 +374,7 @@ body.preview #root {
 /* ── 投影镜头（在倾斜层外，正对屏幕）── */
 .lens {
   position: absolute;
-  transform: skewX(-7deg) rotate(3deg);
+  transform: skewX(-12deg) rotate(5deg);
   left: 742px;
   top: 706px;
   width: 84px;
