@@ -101,7 +101,7 @@ body.preview #root {
   left: 140px;
   top: 74px;
   width: 480px;
-  height: 745px;
+  height: 806px;
 }
 
 /* 蓝色底板 */
@@ -329,7 +329,7 @@ body.preview #root {
 .quick {
   position: absolute;
   left: 12px;
-  bottom: 6px;
+  bottom: 16px;
   width: 456px;
   display: flex;
   align-items: center;
