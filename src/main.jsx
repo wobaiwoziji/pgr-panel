@@ -42,6 +42,14 @@ export default function App() {
   const [toast, setToast] = useState("");
   const [np, setNp] = useState({ title: "", artist: "", cover: "", playing: false });
   const [showSet, setShowSet] = useState(false);
+  const openSettings = () => {
+    setShowSet(true);
+    window.pgr?.modal?.(true);
+  };
+  const closeSettings = () => {
+    setShowSet(false);
+    window.pgr?.modal?.(false);
+  };
   const [musicDbg, setMusicDbg] = useState("检测中…");
   const [ui, setUi] = useState(() => {
     try {
@@ -156,7 +164,7 @@ export default function App() {
     const onKey = (e) => {
       if (e.key !== "Escape") return;
       setOpen(false);
-      setShowSet(false);
+      closeSettings();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -261,7 +269,8 @@ export default function App() {
   };
 
   return (
-    <div className="stage">
+    <>
+      <div className="stage">
       <div className={`holo hit ${open ? "is-open" : ""}`}>
         {/* 唯一做倾斜的一层；里面全是正矩形 */}
         <div className="tilt" data-ed="tilt">
@@ -335,7 +344,7 @@ export default function App() {
                   onClick={(e) => {
                     if (q.id === "settings") {
                       e.stopPropagation();
-                      setShowSet(true);
+                      openSettings();
                       return;
                     }
                     run(e, q.id);
@@ -379,23 +388,24 @@ export default function App() {
       </button>
 
       {toast && <div className="toast">{toast}</div>}
+      {(!window.pgr || location.search.includes("tune")) && <Tuner />}
+      {(!window.pgr || location.search.includes("edit")) && <Editor />}
+      {(!window.pgr || location.search.includes("pick")) && <Picker />}
+      {location.search.includes("compare") && <Compare />}
+      </div>
 
       <Settings
         open={showSet}
         value={ui}
         onChange={setUi}
-        onClose={() => setShowSet(false)}
+        onClose={closeSettings}
         version="0.3"
         music={musicDbg}
         onOpenConfig={() =>
           window.pgr ? window.pgr.launch("settings") : setToast("预览模式：配置文件")
         }
       />
-      {(!window.pgr || location.search.includes("tune")) && <Tuner />}
-      {(!window.pgr || location.search.includes("edit")) && <Editor />}
-      {(!window.pgr || location.search.includes("pick")) && <Picker />}
-      {location.search.includes("compare") && <Compare />}
-    </div>
+    </>
   );
 }
 

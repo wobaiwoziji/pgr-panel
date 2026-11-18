@@ -5,6 +5,9 @@ const { nowPlaying, findCover } = require("./media.cjs");
 const ROOT = app.getAppPath();
 // 打包后配置和 PowerShell 脚本在 resources 目录里（不是 asar 内部）
 const RES = app.isPackaged ? process.resourcesPath : ROOT;
+const NP_SCRIPT = app.isPackaged
+  ? path.join(process.resourcesPath, "nowplaying.ps1")
+  : path.join(ROOT, "electron", "nowplaying.ps1");
 const CONFIG_PATH = path.join(RES, "config.json");
 
 function readConfig() {
@@ -211,7 +214,7 @@ function createWindow() {
   });
 }
 
-ipcMain.handle("pgr:nowplaying", () => nowPlaying(path.join(RES, "nowplaying.ps1")));
+ipcMain.handle("pgr:nowplaying", () => nowPlaying(NP_SCRIPT));
 // 拖拽投影：按住镜头球移动整个窗口（主进程跟光标，省 IPC）
 let dragTimer = null;
 let menuBlockUntil = 0;
@@ -246,8 +249,12 @@ ipcMain.on("pgr:drag-end", stopDrag);
 ipcMain.handle("pgr:cover", (_e, q) => findCover(q));
 
 // 整体缩放：窗口跟着一起变，右下角保持不动，并且不许超出屏幕
-ipcMain.handle("pgr:zoom", (_e, z) => {
-  if (!win) return false;
+let curZoom = 1;
+let modalOpen = false;
+const MODAL = { w: 620, h: 760 };
+
+function applyZoom(z) {
+  if (!win) return 1;
   const b = win.getBounds();
   const area = screen.getDisplayNearestPoint({
     x: Math.round(b.x + b.width / 2),
@@ -255,12 +262,24 @@ ipcMain.handle("pgr:zoom", (_e, z) => {
   }).workArea;
   const fit = Math.min(area.width / W.width, area.height / W.height);
   const zz = Math.min(1.4, Math.max(0.5, Math.min(Number(z) || 1, fit)));
-  const nw = Math.round(W.width * zz);
-  const nh = Math.round(W.height * zz);
+  curZoom = zz;
+  let nw = Math.round(W.width * zz);
+  let nh = Math.round(W.height * zz);
+  // 设置面板不跟着缩放，给它留出足够大的窗口
+  if (modalOpen) {
+    nw = Math.max(nw, Math.min(MODAL.w, area.width));
+    nh = Math.max(nh, Math.min(MODAL.h, area.height));
+  }
   const pos = clampPos(b.x + b.width - nw, b.y + b.height - nh, nw, nh);
   win.setBounds({ ...pos, width: nw, height: nh });
-  // 实际生效的缩放，渲染进程照着它改 --zoom，避免画面被窗口裁掉
   return zz;
+}
+
+ipcMain.handle("pgr:zoom", (_e, z) => applyZoom(z));
+
+ipcMain.on("pgr:modal", (_e, on) => {
+  modalOpen = !!on;
+  applyZoom(curZoom);
 });
 
 ipcMain.handle("pgr:config", () => ({

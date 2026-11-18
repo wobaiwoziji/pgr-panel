@@ -8,6 +8,7 @@ contextBridge.exposeInMainWorld("pgr", {
   zoom: (z) => ipcRenderer.invoke("pgr:zoom", z),
   dragStart: () => ipcRenderer.send("pgr:drag-start"),
   dragEnd: () => ipcRenderer.send("pgr:drag-end"),
+  modal: (on) => ipcRenderer.send("pgr:modal", on),
   setInteractive: (on) => ipcRenderer.send("pgr:interactive", on),
   quit: () => ipcRenderer.send("pgr:quit"),
 });
