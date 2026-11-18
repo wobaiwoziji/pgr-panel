@@ -196,10 +196,14 @@ export default function App() {
     draggingRef.current = true;
     const onUp = () => {
       window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onUp);
+      window.removeEventListener("blur", onUp);
       draggingRef.current = false;
       window.pgr.dragEnd();
     };
     window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onUp);
+    window.addEventListener("blur", onUp);
     window.pgr.dragStart();
   };
 

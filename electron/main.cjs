@@ -131,7 +131,10 @@ function createWindow() {
   win.once("ready-to-show", () => win.show());
 
   win.on("moved", savePos);
-  win.on("close", savePos);
+  win.on("close", () => {
+    stopDrag();
+    savePos();
+  });
 
   // 开发用：PGR_CAPTURE=<png 路径> 启动后截一张窗口内容就退出
   if (process.env.PGR_CAPTURE) {
@@ -195,10 +198,15 @@ ipcMain.on("pgr:drag-start", () => {
   menuBlockUntil = 0;
   const c0 = screen.getCursorScreenPoint();
   const [x0, y0] = win.getPosition();
+  const started = Date.now();
   dragTimer = setInterval(() => {
-    if (!win) return stopDrag();
+    if (!win || win.isDestroyed() || Date.now() - started > 30000) return stopDrag();
     const c = screen.getCursorScreenPoint();
-    win.setPosition(Math.round(x0 + c.x - c0.x), Math.round(y0 + c.y - c0.y));
+    try {
+      win.setPosition(Math.round(x0 + c.x - c0.x), Math.round(y0 + c.y - c0.y));
+    } catch {
+      stopDrag();
+    }
   }, 16);
 });
 
@@ -265,6 +273,9 @@ app.whenReady().then(() => {
   });
 });
 
-app.on("will-quit", () => globalShortcut.unregisterAll());
+app.on("will-quit", () => {
+  stopDrag();
+  globalShortcut.unregisterAll();
+});
 
 app.on("window-all-closed", () => app.quit());
