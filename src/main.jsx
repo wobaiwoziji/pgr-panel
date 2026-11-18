@@ -200,7 +200,10 @@ export default function App() {
         if (r?.ok && (r.title || r.cover)) {
           hasTrack = !!r.title;
           const base = { title: r.title || "", artist: r.artist || "", cover: r.cover || "", playing: !!r.playing };
-          setNp(base);
+          // 播放器给了封面就用它；没给就沿用这首歌已经补到的在线封面，避免每轮都闪一下
+          setNp((prev) =>
+            !base.cover && prev.title === base.title && prev.cover ? { ...base, cover: prev.cover } : base
+          );
           setMusicDbg(base.cover ? "已连接 · 有封面" : "已连接 · 播放器没给封面");
           // 播放器不给封面（本地音乐常见）时，按歌名去网上补一张
           if (!base.cover && base.title && ui.onlineCover !== false && window.pgr?.cover) {
@@ -216,7 +219,7 @@ export default function App() {
         /* 忽略 */
       }
       if (!alive) return;
-      timer = setTimeout(tick, hasTrack ? 1400 : 3500);
+      timer = setTimeout(tick, hasTrack ? 1000 : 3500);
     };
 
     tick();

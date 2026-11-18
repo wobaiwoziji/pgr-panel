@@ -4,7 +4,6 @@ $ErrorActionPreference = 'Stop'
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 Add-Type -AssemblyName System.Runtime.WindowsRuntime | Out-Null
-Add-Type -AssemblyName System.Drawing | Out-Null
 
 $asTaskGeneric = ([System.WindowsRuntimeSystemExtensions].GetMethods() | Where-Object {
     $_.Name -eq 'AsTask' -and $_.GetParameters().Count -eq 1 -and
@@ -20,6 +19,7 @@ function Await($op, $type) {
 
 # 任意图片字节 -> 220×220 JPEG 的 data URL（顺手统一格式，避免把 jpg 当成 png）
 function To-PngDataUrl($bytes) {
+    Add-Type -AssemblyName System.Drawing -ErrorAction SilentlyContinue
     $ms = New-Object System.IO.MemoryStream(, $bytes)
     $img = [System.Drawing.Image]::FromStream($ms)
     $side = 220
