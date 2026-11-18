@@ -123,14 +123,14 @@ body.preview #root {
 /* 上：底边 = 面板顶边 (140,74)-(620,74)，顶点 = 镜头中心 (784,748)
    渐变开头压暗：浅色壁纸下光带会完全看不见，暗边 + 亮心两头都能读出来 */
 .tri-top {
-  background: linear-gradient(200deg, rgba(8, 26, 54, 0.5) 0%, rgba(120, 190, 255, 0.34) 42%, rgba(70, 140, 215, 0.12) 72%, transparent 100%);
+  background: linear-gradient(200deg, rgba(8, 26, 54, 0.62) 0%, rgba(120, 190, 255, 0.52) 42%, rgba(70, 140, 215, 0.24) 72%, transparent 100%);
   clip-path: polygon(20.5% 12.08%, 74.79% 12.08%, 93.33% 83.86%);
   animation: beamPulse 4.5s ease-in-out infinite alternate;
 }
 
 /* 下：底边 = 面板底边 (140,846)-(620,846)，顶点同上 */
 .tri-bottom {
-  background: linear-gradient(20deg, rgba(18, 56, 104, 0.5) 0%, rgba(28, 78, 138, 0.16) 60%, transparent 100%);
+  background: linear-gradient(20deg, rgba(18, 56, 104, 0.62) 0%, rgba(28, 78, 138, 0.26) 60%, transparent 100%);
   clip-path: polygon(20.5% 94.29%, 74.79% 94.29%, 93.33% 83.86%);
   animation: beamPulse 4.5s ease-in-out infinite alternate-reverse;
 }
