@@ -74,6 +74,32 @@ export default function Settings({ open, value, onChange, onClose, version, onOp
           </div>
         </section>
 
+        <section className="set-sec">
+          <h4>交流</h4>
+          <div className="set-group">
+            <div className="set-group-info">
+              <b>露娜bot交流群</b>
+              <span>群号 1091767355</span>
+              <button
+                className="set-copy"
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText("1091767355");
+                  } catch {
+                    /* 忽略 */
+                  }
+                }}
+              >
+                复制群号
+              </button>
+              <em>有想法、想聊 UI、想加功能的都可以进来</em>
+            </div>
+            <div className="set-qr">
+              <img src="./qq-group.png" alt="QQ 群二维码" draggable="false" />
+            </div>
+          </div>
+        </section>
+
         <footer className="set-foot">
           <span>PGR Panel v{version}</span>
           <button onClick={onOpenConfig}>打开配置文件</button>

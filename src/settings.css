@@ -181,3 +181,69 @@ body.no-motion *::after {
   animation: none !important;
   transition: none !important;
 }
+
+/* 交流群 */
+.set-group {
+  display: grid;
+  grid-template-columns: 1fr 132px;
+  gap: 14px;
+  align-items: center;
+}
+
+.set-group-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.set-group-info b {
+  font-size: 14px;
+  color: #fff;
+  letter-spacing: 0.04em;
+}
+
+.set-group-info span {
+  font-size: 12px;
+  color: rgba(190, 215, 240, 0.8);
+  font-variant-numeric: tabular-nums;
+}
+
+.set-group-info em {
+  margin-top: 2px;
+  font-style: normal;
+  font-size: 11px;
+  line-height: 1.5;
+  color: rgba(170, 200, 230, 0.62);
+}
+
+.set-copy {
+  align-self: flex-start;
+  padding: 4px 10px;
+  border: 1px solid rgba(120, 180, 245, 0.32);
+  border-radius: 4px;
+  background: rgba(40, 90, 155, 0.5);
+  color: #dcefff;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.set-copy:hover {
+  background: rgba(78, 163, 255, 0.4);
+}
+
+.set-qr {
+  width: 132px;
+  height: 132px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(120, 180, 245, 0.3);
+  border-radius: 6px;
+  background: rgba(8, 20, 38, 0.7);
+  overflow: hidden;
+}
+
+.set-qr img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
