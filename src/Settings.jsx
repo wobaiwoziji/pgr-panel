@@ -10,7 +10,7 @@ export default function Settings({ open, value, onChange, onClose, version, onOp
   const set = (k, v) => onChange({ ...value, [k]: v });
 
   return (
-    <div className="set-mask" onClick={onClose}>
+    <div className="set-mask hit" onClick={onClose}>
       <div className="set-panel" onClick={(e) => e.stopPropagation()}>
         <header className="set-head">
           <b>面板设置</b>
@@ -102,7 +102,12 @@ export default function Settings({ open, value, onChange, onClose, version, onOp
 
         <footer className="set-foot">
           <span>PGR Panel v{version}</span>
-          <button onClick={onOpenConfig}>打开配置文件</button>
+          <div className="set-foot-btns">
+            <button onClick={onOpenConfig}>打开配置文件</button>
+            <button className="set-quit" onClick={() => window.pgr?.quit?.()}>
+              退出程序
+            </button>
+          </div>
         </footer>
       </div>
     </div>

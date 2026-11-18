@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, shell, screen, Menu } = require("electron");
+const { app, BrowserWindow, ipcMain, shell, screen, Menu, globalShortcut } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const { nowPlaying } = require("./media.cjs");
@@ -185,9 +185,19 @@ ipcMain.on("pgr:quit", () => app.quit());
 
 app.whenReady().then(() => {
   createWindow();
+
+  // 兜底：Ctrl+Alt+Q 随时退出（面板没有窗口边框，容易关不掉）
+  globalShortcut.register("Control+Alt+Q", () => app.quit());
+  globalShortcut.register("Control+Alt+H", () => {
+    if (!win || win.isDestroyed()) return;
+    win.isVisible() ? win.hide() : win.show();
+  });
+
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 });
+
+app.on("will-quit", () => globalShortcut.unregisterAll());
 
 app.on("window-all-closed", () => app.quit());
