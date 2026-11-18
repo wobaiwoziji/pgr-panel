@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, shell, screen, Menu } = require("electron");
 const path = require("path");
 const fs = require("fs");
+const { nowPlaying } = require("./media.cjs");
 
 const ROOT = app.getAppPath();
 const CONFIG_PATH = path.join(ROOT, "config.json");
@@ -146,6 +147,8 @@ function createWindow() {
     ]).popup({ window: win });
   });
 }
+
+ipcMain.handle("pgr:nowplaying", () => nowPlaying());
 
 ipcMain.handle("pgr:config", () => ({
   ...config,

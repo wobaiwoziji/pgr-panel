@@ -37,6 +37,7 @@ export default function App() {
   const [cfg, setCfg] = useState(FALLBACK);
   const [open, setOpen] = useState(() => !window.pgr);
   const [toast, setToast] = useState("");
+  const [np, setNp] = useState({ title: "", artist: "", cover: "", playing: false });
   const [bar, setBar] = useState({ top: 0, range: 0, ratio: 1 });
   const { time, date } = useClock();
   const gridRef = useRef(null);
@@ -96,6 +97,31 @@ export default function App() {
     const onKey = (e) => e.key === "Escape" && setOpen(false);
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  // 读取系统「正在播放」
+  useEffect(() => {
+    if (!window.pgr?.nowPlaying) return;
+    let alive = true;
+    const tick = async () => {
+      try {
+        const r = await window.pgr.nowPlaying();
+        if (!alive) return;
+        if (r?.ok && (r.title || r.cover)) {
+          setNp({ title: r.title || "", artist: r.artist || "", cover: r.cover || "", playing: !!r.playing });
+        } else {
+          setNp({ title: "", artist: "", cover: "", playing: false });
+        }
+      } catch {
+        /* 忽略 */
+      }
+    };
+    tick();
+    const id = setInterval(tick, 3000);
+    return () => {
+      alive = false;
+      clearInterval(id);
+    };
   }, []);
 
   const toggle = useCallback(() => setOpen((v) => !v), []);
@@ -162,10 +188,15 @@ export default function App() {
             </div>
 
             <div className="media hit" data-ed="media">
-              <span className="cover" />
+              <span className={`cover ${np.cover ? "has-img" : ""}`}>
+                {np.cover ? (
+                  <img className={np.playing ? "spin" : ""} src={np.cover} alt="" draggable="false" />
+                ) : null}
+              </span>
               <span className="media-text">
-                <b>{panel.media?.status}</b>
-                <i>{panel.media?.title}</i>
+                <b>正在播放</b>
+                <i>{np.title || panel.media?.title}</i>
+                {np.artist ? <u>{np.artist}</u> : null}
               </span>
             </div>
 
