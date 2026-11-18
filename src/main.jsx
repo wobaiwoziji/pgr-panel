@@ -9,6 +9,7 @@ import Tuner from "./Tuner.jsx";
 import Editor from "./Editor.jsx";
 import Picker from "./Picker.jsx";
 import Compare from "./Compare.jsx";
+import Particles from "./Particles.jsx";
 
 const ASSET = "./assets/_game/icons/";
 const WEEK = ["日", "一", "二", "三", "四", "五", "六"];
@@ -173,7 +174,9 @@ export default function App() {
       <div className={`holo hit ${open ? "is-open" : ""}`}>
         {/* 唯一做倾斜的一层；里面全是正矩形 */}
         <div className="tilt" data-ed="tilt">
-          {/* 投影轨迹：两片三角，边贴面板上下沿，角连镜头 */}
+          <Particles active={open} />
+
+        {/* 投影轨迹：两片三角，边贴面板上下沿，角连镜头 */}
           <div className="tri tri-top" />
           <div className="tri tri-bottom" />
 

@@ -88,6 +88,18 @@ body.preview #root {
   pointer-events: auto;
 }
 
+/* ── 投影粒子 ───────────────────────── */
+.particles {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 760px;
+  height: 892px;
+  z-index: 1;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
 /* ── 倾斜层 ─────────────────────────── */
 .tilt {
   position: absolute;
