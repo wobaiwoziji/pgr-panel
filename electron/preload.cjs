@@ -6,6 +6,8 @@ contextBridge.exposeInMainWorld("pgr", {
   nowPlaying: () => ipcRenderer.invoke("pgr:nowplaying"),
   cover: (q) => ipcRenderer.invoke("pgr:cover", q),
   zoom: (z) => ipcRenderer.invoke("pgr:zoom", z),
+  dragStart: () => ipcRenderer.send("pgr:drag-start"),
+  dragEnd: () => ipcRenderer.send("pgr:drag-end"),
   setInteractive: (on) => ipcRenderer.send("pgr:interactive", on),
   quit: () => ipcRenderer.send("pgr:quit"),
 });

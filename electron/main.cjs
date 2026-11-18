@@ -150,6 +150,27 @@ function createWindow() {
 }
 
 ipcMain.handle("pgr:nowplaying", () => nowPlaying(path.join(RES, "nowplaying.ps1")));
+// 拖拽投影：按住镜头球移动整个窗口（主进程跟光标，省 IPC）
+let dragTimer = null;
+function stopDrag() {
+  if (dragTimer) clearInterval(dragTimer);
+  dragTimer = null;
+}
+
+ipcMain.on("pgr:drag-start", () => {
+  if (!win) return;
+  stopDrag();
+  const c0 = screen.getCursorScreenPoint();
+  const [x0, y0] = win.getPosition();
+  dragTimer = setInterval(() => {
+    if (!win) return stopDrag();
+    const c = screen.getCursorScreenPoint();
+    win.setPosition(Math.round(x0 + c.x - c0.x), Math.round(y0 + c.y - c0.y));
+  }, 16);
+});
+
+ipcMain.on("pgr:drag-end", stopDrag);
+
 ipcMain.handle("pgr:cover", (_e, q) => findCover(q));
 
 // 整体缩放：窗口跟着一起变，右下角保持不动
