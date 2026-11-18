@@ -33,4 +33,36 @@ async function nowPlaying(script) {
   return data;
 }
 
-module.exports = { nowPlaying };
+const covers = new Map();
+
+/**
+ * 播放器不提供封面时（本地音乐很常见），按歌名 + 歌手去 iTunes 搜一张。
+ * 放在主进程里做，避开渲染进程的 CORS。
+ */
+async function findCover({ title, artist } = {}) {
+  const q = `${artist || ""} ${title || ""}`.trim();
+  if (!q) return "";
+  if (covers.has(q)) return covers.get(q);
+
+  const url =
+    "https://itunes.apple.com/search?term=" +
+    encodeURIComponent(q) +
+    "&entity=song&limit=5";
+  let hit = "";
+  try {
+    const ctl = new AbortController();
+    const t = setTimeout(() => ctl.abort(), 6000);
+    const res = await fetch(url, { signal: ctl.signal });
+    clearTimeout(t);
+    const json = await res.json();
+    const first = (json.results || [])[0];
+    if (first?.artworkUrl100) hit = String(first.artworkUrl100).replace("100x100", "600x600");
+  } catch {
+    hit = "";
+  }
+  covers.set(q, hit);
+  if (covers.size > 300) covers.delete(covers.keys().next().value);
+  return hit;
+}
+
+module.exports = { nowPlaying, findCover };

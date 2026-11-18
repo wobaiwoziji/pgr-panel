@@ -42,11 +42,12 @@ export default function App() {
   const [toast, setToast] = useState("");
   const [np, setNp] = useState({ title: "", artist: "", cover: "", playing: false });
   const [showSet, setShowSet] = useState(false);
+  const [musicDbg, setMusicDbg] = useState("检测中…");
   const [ui, setUi] = useState(() => {
     try {
-      return { particles: 72, grid: 85, beam: 100, motion: true, particleOn: true, ...JSON.parse(localStorage.getItem("pgr-ui") || "{}") };
+      return { particles: 72, grid: 85, beam: 100, motion: true, particleOn: true, onlineCover: true, ...JSON.parse(localStorage.getItem("pgr-ui") || "{}") };
     } catch {
-      return { particles: 72, grid: 85, beam: 100, motion: true, particleOn: true };
+      return { particles: 72, grid: 85, beam: 100, motion: true, particleOn: true, onlineCover: true };
     }
   });
 
@@ -151,9 +152,18 @@ export default function App() {
         const r = await window.pgr.nowPlaying();
         if (!alive) return;
         if (r?.ok && (r.title || r.cover)) {
-          setNp({ title: r.title || "", artist: r.artist || "", cover: r.cover || "", playing: !!r.playing });
+          const base = { title: r.title || "", artist: r.artist || "", cover: r.cover || "", playing: !!r.playing };
+          setNp(base);
+          setMusicDbg(base.cover ? "已连接 · 有封面" : "已连接 · 播放器没给封面");
+          // 播放器不给封面（本地音乐常见）时，按歌名去网上补一张
+          if (!base.cover && base.title && ui.onlineCover !== false && window.pgr?.cover) {
+            const url = await window.pgr.cover({ title: base.title, artist: base.artist });
+            if (!alive) return;
+            if (url) setNp((p) => (p.title === base.title && !p.cover ? { ...p, cover: url } : p));
+          }
         } else {
           setNp({ title: "", artist: "", cover: "", playing: false });
+          setMusicDbg(`未连接 · ${r?.reason || "无会话"}`);
         }
       } catch {
         /* 忽略 */
@@ -165,7 +175,7 @@ export default function App() {
       alive = false;
       clearInterval(id);
     };
-  }, []);
+  }, [ui.onlineCover]);
 
   const toggle = useCallback(() => setOpen((v) => !v), []);
 
@@ -325,6 +335,7 @@ export default function App() {
         onChange={setUi}
         onClose={() => setShowSet(false)}
         version="0.3"
+        music={musicDbg}
         onOpenConfig={() =>
           window.pgr ? window.pgr.launch("settings") : setToast("预览模式：配置文件")
         }

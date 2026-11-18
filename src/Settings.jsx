@@ -4,7 +4,7 @@ import React from "react";
  * 面板设置：外观 / 动效 / 插件位。
  * 值由 App 持有并存 localStorage，这里只负责渲染和回调。
  */
-export default function Settings({ open, value, onChange, onClose, version, onOpenConfig }) {
+export default function Settings({ open, value, onChange, onClose, version, music, onOpenConfig }) {
   if (!open) return null;
 
   const set = (k, v) => onChange({ ...value, [k]: v });
@@ -50,6 +50,25 @@ export default function Settings({ open, value, onChange, onClose, version, onOp
             />
             <b>{value.beam ?? 100}%</b>
           </label>
+        </section>
+
+        <section className="set-sec">
+          <h4>音乐</h4>
+          <label className="set-row">
+            <span>在线补封面</span>
+            <button
+              className={`set-switch ${value.onlineCover !== false ? "on" : ""}`}
+              onClick={() => set("onlineCover", value.onlineCover === false)}
+              aria-pressed={value.onlineCover !== false}
+            >
+              <i />
+            </button>
+            <b>{value.onlineCover !== false ? "开" : "关"}</b>
+          </label>
+          <div className="set-empty">
+            {music || "检测中…"}
+            <em>来自 Windows「正在播放」；播放器不给封面时按歌名上网找</em>
+          </div>
         </section>
 
         <section className="set-sec">

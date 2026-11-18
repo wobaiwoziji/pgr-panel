@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, shell, screen, Menu, globalShortcut } = require("electron");
 const path = require("path");
 const fs = require("fs");
-const { nowPlaying } = require("./media.cjs");
+const { nowPlaying, findCover } = require("./media.cjs");
 const ROOT = app.getAppPath();
 // 打包后配置和 PowerShell 脚本在 resources 目录里（不是 asar 内部）
 const RES = app.isPackaged ? process.resourcesPath : ROOT;
@@ -150,6 +150,7 @@ function createWindow() {
 }
 
 ipcMain.handle("pgr:nowplaying", () => nowPlaying(path.join(RES, "nowplaying.ps1")));
+ipcMain.handle("pgr:cover", (_e, q) => findCover(q));
 
 ipcMain.handle("pgr:config", () => ({
   ...config,
