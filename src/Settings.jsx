@@ -1,10 +1,17 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 /**
  * 面板设置：外观 / 动效 / 插件位。
  * 值由 App 持有并存 localStorage，这里只负责渲染和回调。
  */
 export default function Settings({ open, value, onChange, onClose, version, music, onOpenConfig }) {
+  const [local, setLocal] = useState({ root: "", count: 0 });
+
+  useEffect(() => {
+    if (!open || !window.pgr?.localStatus) return;
+    window.pgr.localStatus().then((s) => s && setLocal(s));
+  }, [open]);
+
   if (!open) return null;
 
   const set = (k, v) => onChange({ ...value, [k]: v });
@@ -79,8 +86,21 @@ export default function Settings({ open, value, onChange, onClose, version, musi
           </label>
           <div className="set-empty">
             {music || "检测中…"}
-            <em>来自 Windows「正在播放」；播放器不给封面时按歌名上网找</em>
+            <em>来自 Windows「正在播放」；播放器不给封面时先查本地目录，再上网找</em>
           </div>
+          <label className="set-row">
+            <span>本地音乐</span>
+            <button
+              className="set-copy"
+              onClick={async () => {
+                const s = await window.pgr?.localFolder?.();
+                if (s) setLocal(s);
+              }}
+            >
+              选择目录
+            </button>
+            <b>{local.count ? `${local.count} 首` : "未设置"}</b>
+          </label>
         </section>
 
         <section className="set-sec">

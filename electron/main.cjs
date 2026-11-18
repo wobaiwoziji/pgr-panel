@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain, shell, screen, Menu, globalShortcut, Tray, 
 const path = require("path");
 const fs = require("fs");
 const { nowPlaying, findCover } = require("./media.cjs");
+const { setFolder, status: localStatus, findLocalCover } = require("./local.cjs");
 const ROOT = app.getAppPath();
 // 打包后配置和 PowerShell 脚本在 resources 目录里（不是 asar 内部）
 const RES = app.isPackaged ? process.resourcesPath : ROOT;
@@ -293,6 +294,17 @@ ipcMain.on("pgr:drag-end", () => {
 });
 
 ipcMain.handle("pgr:cover", (_e, q) => findCover(q));
+
+ipcMain.handle("pgr:localCover", (_e, q) => findLocalCover(q));
+ipcMain.handle("pgr:localStatus", () => localStatus());
+ipcMain.handle("pgr:localFolder", async () => {
+  const r = await dialog.showOpenDialog(win, {
+    title: "选择本地音乐目录",
+    properties: ["openDirectory"],
+  });
+  if (r.canceled || !r.filePaths[0]) return localStatus();
+  return setFolder(r.filePaths[0]);
+});
 
 // 整体缩放：窗口跟着一起变，右下角保持不动，并且不许超出屏幕
 let curZoom = 1;

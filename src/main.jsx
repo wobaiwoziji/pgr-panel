@@ -205,9 +205,15 @@ export default function App() {
             !base.cover && prev.title === base.title && prev.cover ? { ...base, cover: prev.cover } : base
           );
           setMusicDbg(base.cover ? "已连接 · 有封面" : "已连接 · 播放器没给封面");
-          // 播放器不给封面（本地音乐常见）时，按歌名去网上补一张
-          if (!base.cover && base.title && ui.onlineCover !== false && window.pgr?.cover) {
-            const url = await window.pgr.cover({ title: base.title, artist: base.artist });
+          // 封面：先找本地音乐目录里的内嵌封面（最快），没有再上网搜
+          if (!base.cover && base.title) {
+            let url = "";
+            if (window.pgr?.localCover) {
+              url = await window.pgr.localCover({ title: base.title, artist: base.artist });
+            }
+            if (!url && ui.onlineCover !== false && window.pgr?.cover) {
+              url = await window.pgr.cover({ title: base.title, artist: base.artist });
+            }
             if (!alive) return;
             if (url) setNp((p) => (p.title === base.title && !p.cover ? { ...p, cover: url } : p));
           }

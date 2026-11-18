@@ -12,6 +12,7 @@
     "pack:portable": "vite build && electron-builder --win portable --x64"
   },
   "dependencies": {
+    "music-metadata": "^7.14.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
@@ -33,18 +34,38 @@
       "electron/main.cjs",
       "electron/preload.cjs",
       "electron/media.cjs",
+      "electron/local.cjs",
       "package.json"
     ],
     "extraResources": [
-      { "from": "config.json", "to": "config.json" },
-      { "from": "electron/nowplaying.ps1", "to": "nowplaying.ps1" },
-      { "from": "build/icon.ico", "to": "tray.ico" }
+      {
+        "from": "config.json",
+        "to": "config.json"
+      },
+      {
+        "from": "electron/nowplaying.ps1",
+        "to": "nowplaying.ps1"
+      },
+      {
+        "from": "build/icon.ico",
+        "to": "tray.ico"
+      }
     ],
     "win": {
       "icon": "build/icon.ico",
       "target": [
-        { "target": "nsis", "arch": ["x64"] },
-        { "target": "portable", "arch": ["x64"] }
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
       ]
     },
     "nsis": {
