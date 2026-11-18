@@ -12,8 +12,10 @@ import Picker from "./Picker.jsx";
 import Compare from "./Compare.jsx";
 import Particles from "./Particles.jsx";
 import Settings from "./Settings.jsx";
+import ButtonConfig from "./ButtonConfig.jsx";
 
 const ASSET = "./assets/_game/icons/";
+const iconSrc = (icon) => (icon && icon.startsWith("data:") ? icon : ASSET + icon + ".png");
 const WEEK = ["日", "一", "二", "三", "四", "五", "六"];
 
 const FALLBACK = {
@@ -41,6 +43,20 @@ export default function App() {
   const [open, setOpen] = useState(() => !window.pgr);
   const [toast, setToast] = useState("");
   const [np, setNp] = useState({ title: "", artist: "", cover: "", playing: false });
+  const [btnCfg, setBtnCfg] = useState(null);
+  const openBtnCfg = (t) => {
+    setBtnCfg(t);
+    window.pgr?.modal?.(true);
+  };
+  const closeBtnCfg = () => {
+    setBtnCfg(null);
+    window.pgr?.modal?.(false);
+  };
+  const refreshCfg = async () => {
+    if (!window.pgr?.getConfig) return;
+    const c = await window.pgr.getConfig();
+    if (c?.panel) setCfg(c);
+  };
   const [showSet, setShowSet] = useState(false);
   const openSettings = () => {
     setShowSet(true);
@@ -316,9 +332,21 @@ export default function App() {
                         key={b.id}
                         style={{ "--i": ri * 3 + ci }}
                         onClick={(e) => run(e, b.id)}
+                        onContextMenu={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          window.pgr?.suppressMenu?.();
+                          openBtnCfg({
+                            kind: "cell",
+                            id: b.id,
+                            label: b.label,
+                            icon: b.icon,
+                            action: cfg.actions?.[b.id],
+                          });
+                        }}
                       >
                         <span className="cell-box" data-ed={`box-${b.id}`}>
-                          <img src={ASSET + b.icon + ".png"} alt="" draggable="false" data-ed={`icon-${b.id}`} />
+                          <img src={iconSrc(b.icon)} alt="" draggable="false" data-ed={`icon-${b.id}`} />
                         </span>
                         {b.label ? (
                           <span className="cell-label" data-ed={`label-${b.id}`}>
@@ -349,9 +377,15 @@ export default function App() {
                     }
                     run(e, q.id);
                   }}
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    window.pgr?.suppressMenu?.();
+                    openBtnCfg({ kind: "quick", id: q.id, icon: q.icon, action: cfg.actions?.[q.id] });
+                  }}
                   title={q.id}
                 >
-                  <img src={ASSET + q.icon + ".png"} alt="" draggable="false" data-ed={`quick-${q.id}`} />
+                  <img src={iconSrc(q.icon)} alt="" draggable="false" data-ed={`quick-${q.id}`} />
                 </button>
               ))}
             </div>
@@ -405,6 +439,8 @@ export default function App() {
           window.pgr ? window.pgr.launch("settings") : setToast("预览模式：配置文件")
         }
       />
+
+      <ButtonConfig target={btnCfg} onClose={closeBtnCfg} onSaved={refreshCfg} />
     </>
   );
 }

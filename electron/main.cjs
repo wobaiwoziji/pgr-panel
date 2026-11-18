@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, shell, screen, Menu, globalShortcut, Tray, nativeImage } = require("electron");
+const { app, BrowserWindow, ipcMain, shell, screen, Menu, globalShortcut, Tray, nativeImage, dialog } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const { nowPlaying, findCover } = require("./media.cjs");
@@ -9,12 +9,35 @@ const NP_SCRIPT = app.isPackaged
   ? path.join(process.resourcesPath, "nowplaying.ps1")
   : path.join(ROOT, "electron", "nowplaying.ps1");
 const CONFIG_PATH = path.join(RES, "config.json");
+// 用户改过的按钮/动作存在这里，升级不会被覆盖
+const USER_CONFIG = path.join(app.getPath("userData"), "config.json");
 
 function readConfig() {
+  let base;
   try {
-    return JSON.parse(fs.readFileSync(CONFIG_PATH, "utf8"));
+    base = JSON.parse(fs.readFileSync(CONFIG_PATH, "utf8"));
   } catch {
-    return { window: { width: 440, height: 690, margin: 24 }, panel: { buttons: [], quick: [] }, actions: {} };
+    base = { window: { width: 440, height: 690, margin: 24 }, panel: { buttons: [], quick: [] }, actions: {} };
+  }
+  try {
+    const user = JSON.parse(fs.readFileSync(USER_CONFIG, "utf8"));
+    return {
+      ...base,
+      ...user,
+      window: { ...(base.window || {}), ...(user.window || {}) },
+      panel: { ...(base.panel || {}), ...(user.panel || {}) },
+      actions: { ...(base.actions || {}), ...(user.actions || {}) },
+    };
+  } catch {
+    return base;
+  }
+}
+
+function saveConfig() {
+  try {
+    fs.writeFileSync(USER_CONFIG, JSON.stringify(config, null, 2), "utf8");
+  } catch {
+    /* 忽略 */
   }
 }
 
@@ -85,7 +108,7 @@ function createTray() {
       { label: "显示 / 收起", click: toggleShow },
       { label: "回到右下角", click: resetPos },
       { label: "重新加载", click: () => win?.reload() },
-      { label: "打开配置", click: () => shell.openPath(CONFIG_PATH) },
+      { label: "打开配置", click: () => openUserConfig() },
       { type: "separator" },
       { label: "退出", click: () => app.quit() },
     ])
@@ -207,7 +230,7 @@ function createWindow() {
     if (Date.now() < menuBlockUntil) return;
     Menu.buildFromTemplate([
       { label: "重新加载", click: () => win.reload() },
-      { label: "打开配置", click: () => shell.openPath(CONFIG_PATH) },
+      { label: "打开配置", click: () => openUserConfig() },
       { type: "separator" },
       { label: "退出", click: () => app.quit() },
     ]).popup({ window: win });
@@ -291,6 +314,61 @@ ipcMain.on("pgr:interactive", (_e, on) => {
   if (win) win.setIgnoreMouseEvents(!on, { forward: true });
 });
 
+function openUserConfig() {
+  if (!fs.existsSync(USER_CONFIG)) saveConfig();
+  return shell.openPath(USER_CONFIG);
+}
+
+ipcMain.handle("pgr:update", (_e, { kind, id, patch }) => {
+  const p = patch || {};
+  if (kind === "quick") {
+    const q = (config.panel.quick || []).find((x) => x.id === id);
+    if (!q) return { ok: false, error: `no quick ${id}` };
+    if (p.icon) q.icon = p.icon;
+  } else {
+    const b = (config.panel.buttons || []).find((x) => x.id === id);
+    if (!b) return { ok: false, error: `no button ${id}` };
+    if (p.label !== undefined) b.label = p.label;
+    if (p.icon) b.icon = p.icon;
+  }
+  if (p.action !== undefined) {
+    if (!p.action) delete config.actions[id];
+    else config.actions[id] = p.action;
+  }
+  saveConfig();
+  return { ok: true };
+});
+
+ipcMain.handle("pgr:pickFile", async () => {
+  const r = await dialog.showOpenDialog(win, {
+    title: "选择要打开的文件或程序",
+    properties: ["openFile"],
+  });
+  return r.canceled ? "" : r.filePaths[0] || "";
+});
+
+ipcMain.handle("pgr:pickImage", async () => {
+  const r = await dialog.showOpenDialog(win, {
+    title: "选择图标图片",
+    properties: ["openFile"],
+    filters: [{ name: "图片", extensions: ["png", "jpg", "jpeg", "webp", "ico"] }],
+  });
+  if (r.canceled || !r.filePaths[0]) return "";
+  try {
+    const buf = fs.readFileSync(r.filePaths[0]);
+    if (buf.length > 3 * 1024 * 1024) return "";
+    const ext = path.extname(r.filePaths[0]).slice(1).toLowerCase();
+    const mime = ext === "png" ? "image/png" : ext === "webp" ? "image/webp" : "image/jpeg";
+    return `data:${mime};base64,${buf.toString("base64")}`;
+  } catch {
+    return "";
+  }
+});
+
+ipcMain.on("pgr:suppress-menu", () => {
+  menuBlockUntil = Date.now() + 400;
+});
+
 ipcMain.handle("pgr:launch", async (_e, id) => {
   const action = (config.actions || {})[id];
   if (!action) return { ok: false, error: `no action for ${id}` };
@@ -306,7 +384,7 @@ ipcMain.handle("pgr:launch", async (_e, id) => {
     return err ? { ok: false, error: err } : { ok: true };
   }
   if (action.type === "config") {
-    await shell.openPath(CONFIG_PATH);
+    await openUserConfig();
     return { ok: true };
   }
   return { ok: false, error: `unknown type ${action.type}` };

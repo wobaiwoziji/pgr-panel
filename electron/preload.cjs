@@ -9,6 +9,10 @@ contextBridge.exposeInMainWorld("pgr", {
   dragStart: () => ipcRenderer.send("pgr:drag-start"),
   dragEnd: () => ipcRenderer.send("pgr:drag-end"),
   modal: (on) => ipcRenderer.send("pgr:modal", on),
+  update: (payload) => ipcRenderer.invoke("pgr:update", payload),
+  pickFile: () => ipcRenderer.invoke("pgr:pickFile"),
+  pickImage: () => ipcRenderer.invoke("pgr:pickImage"),
+  suppressMenu: () => ipcRenderer.send("pgr:suppress-menu"),
   setInteractive: (on) => ipcRenderer.send("pgr:interactive", on),
   quit: () => ipcRenderer.send("pgr:quit"),
 });
