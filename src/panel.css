@@ -112,12 +112,14 @@ body.preview #root {
 .tri-top {
   background: linear-gradient(200deg, rgba(150, 205, 255, 0.34) 0%, rgba(90, 160, 225, 0.12) 55%, transparent 100%);
   clip-path: polygon(20.5% 12.08%, 74.79% 12.08%, 93.33% 83.86%);
+  animation: beamPulse 4.5s ease-in-out infinite alternate;
 }
 
 /* 下：底边 = 面板底边 (140,846)-(620,846)，顶点同上 */
 .tri-bottom {
   background: linear-gradient(20deg, rgba(18, 56, 104, 0.5) 0%, rgba(28, 78, 138, 0.16) 60%, transparent 100%);
   clip-path: polygon(20.5% 94.29%, 74.79% 94.29%, 93.33% 83.86%);
+  animation: beamPulse 4.5s ease-in-out infinite alternate-reverse;
 }
 
 /* ── 平面布局：480×745，居中 ────────── */
@@ -128,6 +130,11 @@ body.preview #root {
   top: 74px;
   width: 480px;
   height: 772px;
+}
+
+@keyframes beamPulse {
+  from { opacity: 0.72; }
+  to { opacity: 1; }
 }
 
 /* 蓝色底板下方的一份副本：右移、压暗，当作投影里的实体感 */
@@ -489,6 +496,13 @@ body.preview #root {
   height: 100%;
   background-image: url("/assets/_game/icons/lens_ring.png");
   opacity: 0.9;
+  animation: ringSpin 16s linear infinite;
+}
+
+@keyframes ringSpin {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
 }
 
 .l-petals {
