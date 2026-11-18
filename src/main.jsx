@@ -63,8 +63,17 @@ export default function App() {
     r.style.setProperty("--zoom", z.toFixed(2));
     // 首次是 100% 就别动窗口（可能被 PGR_SIZE 指定过尺寸）
     if (window.pgr?.zoom && zoomApplied.current !== z) {
-      if (zoomApplied.current !== null || z !== 1) window.pgr.zoom(z);
+      const first = zoomApplied.current === null;
       zoomApplied.current = z;
+      if (!first || z !== 1) {
+        // 主进程会按屏幕大小夹一次，返回真正生效的比例
+        window.pgr.zoom(z).then((zz) => {
+          if (typeof zz === "number" && Math.abs(zz - z) > 0.005) {
+            r.style.setProperty("--zoom", zz.toFixed(2));
+            zoomApplied.current = zz;
+          }
+        });
+      }
     }
     document.body.classList.toggle("no-motion", !ui.motion);
     localStorage.setItem("pgr-ui", JSON.stringify(ui));

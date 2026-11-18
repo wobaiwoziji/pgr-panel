@@ -35,6 +35,33 @@ function expand(value) {
 let win = null;
 let tray = null;
 
+// 把窗口限制在屏幕工作区内，避免缩放/拖动后跑到看不见的地方
+function clampPos(x, y, w, h) {
+  const cx = Math.round(x + w / 2);
+  const cy = Math.round(y + h / 2);
+  const area = screen.getDisplayNearestPoint({ x: cx, y: cy }).workArea;
+  const nx = Math.max(area.x, Math.min(Math.round(x), area.x + area.width - w));
+  const ny = Math.max(area.y, Math.min(Math.round(y), area.y + area.height - h));
+  return { x: nx, y: ny };
+}
+
+function homePos(w = W.width, h = W.height) {
+  const area = screen.getPrimaryDisplay().workArea;
+  return {
+    x: area.x + area.width - w - W.margin,
+    y: area.y + area.height - h - W.margin,
+  };
+}
+
+function resetPos() {
+  if (!win) return;
+  const b = win.getBounds();
+  const home = homePos(b.width, b.height);
+  const p = clampPos(home.x, home.y, b.width, b.height);
+  win.setPosition(p.x, p.y);
+  win.show();
+}
+
 function toggleShow() {
   if (!win) return;
   if (win.isVisible()) win.hide();
@@ -53,6 +80,7 @@ function createTray() {
   tray.setContextMenu(
     Menu.buildFromTemplate([
       { label: "显示 / 收起", click: toggleShow },
+      { label: "回到右下角", click: resetPos },
       { label: "重新加载", click: () => win?.reload() },
       { label: "打开配置", click: () => shell.openPath(CONFIG_PATH) },
       { type: "separator" },
@@ -87,14 +115,15 @@ function savePos() {
 function createWindow() {
   const area = screen.getPrimaryDisplay().workArea;
   const saved = loadPos();
-  const x = area.x + area.width - W.width - W.margin;
-  const y = area.y + area.height - W.height - W.margin;
+  const start = saved
+    ? clampPos(saved.x, saved.y, W.width, W.height)
+    : { x: area.x + area.width - W.width - W.margin, y: area.y + area.height - W.height - W.margin };
 
   win = new BrowserWindow({
     width: W.width,
     height: W.height,
-    x: saved ? saved.x : x,
-    y: saved ? saved.y : y,
+    x: start.x,
+    y: start.y,
     frame: false,
     transparent: !W.acrylic,
     backgroundColor: "#00000000",
@@ -203,7 +232,9 @@ ipcMain.on("pgr:drag-start", () => {
     if (!win || win.isDestroyed() || Date.now() - started > 30000) return stopDrag();
     const c = screen.getCursorScreenPoint();
     try {
-      win.setPosition(Math.round(x0 + c.x - c0.x), Math.round(y0 + c.y - c0.y));
+      const b = win.getBounds();
+      const p = clampPos(x0 + c.x - c0.x, y0 + c.y - c0.y, b.width, b.height);
+      win.setPosition(p.x, p.y);
     } catch {
       stopDrag();
     }
@@ -214,15 +245,22 @@ ipcMain.on("pgr:drag-end", stopDrag);
 
 ipcMain.handle("pgr:cover", (_e, q) => findCover(q));
 
-// 整体缩放：窗口跟着一起变，右下角保持不动
+// 整体缩放：窗口跟着一起变，右下角保持不动，并且不许超出屏幕
 ipcMain.handle("pgr:zoom", (_e, z) => {
   if (!win) return false;
-  const zz = Math.min(1.5, Math.max(0.5, Number(z) || 1));
   const b = win.getBounds();
+  const area = screen.getDisplayNearestPoint({
+    x: Math.round(b.x + b.width / 2),
+    y: Math.round(b.y + b.height / 2),
+  }).workArea;
+  const fit = Math.min(area.width / W.width, area.height / W.height);
+  const zz = Math.min(1.4, Math.max(0.5, Math.min(Number(z) || 1, fit)));
   const nw = Math.round(W.width * zz);
   const nh = Math.round(W.height * zz);
-  win.setBounds({ x: b.x + b.width - nw, y: b.y + b.height - nh, width: nw, height: nh });
-  return true;
+  const pos = clampPos(b.x + b.width - nw, b.y + b.height - nh, nw, nh);
+  win.setBounds({ ...pos, width: nw, height: nh });
+  // 实际生效的缩放，渲染进程照着它改 --zoom，避免画面被窗口裁掉
+  return zz;
 });
 
 ipcMain.handle("pgr:config", () => ({
