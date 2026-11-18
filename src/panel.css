@@ -545,8 +545,8 @@ body.preview #root {
 .dock {
   position: absolute;
   /* 右端的球落在面板球坐标 (691,776) 上 */
-  left: 138px;
-  top: 741px;
+  left: 79px;
+  top: 800px;
   width: 576px;
   height: 70px;
   display: flex;
@@ -564,8 +564,8 @@ body.preview #root {
 /* 收起态右端的投影球 */
 .dock-lens {
   position: absolute;
-  right: 45px;
-  top: calc(50% + 59px);
+  right: -14px;
+  top: 50%;
   width: 76px;
   height: 76px;
   transform: translateY(-50%) skewX(-12deg) rotate(5deg);
