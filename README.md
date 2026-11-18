@@ -2,6 +2,17 @@
 
 仿「战双帕弥什」主界面右侧二级菜单的桌面悬浮窗。Electron + Vite + React，素材来自游戏本体解包。
 
+## 下载
+
+到 [Releases](https://github.com/wobaiwoziji/pgr-panel/releases) 页拿现成的包：
+
+| 文件 | 说明 |
+|---|---|
+| PGR Panel Setup 0.3.0.exe | 安装版，可选目录、建桌面快捷方式 |
+| PGR Panel 0.3.0.exe | 便携版，双击即用，不写注册表 |
+
+> 非官方同人作品，与库洛游戏无关，素材版权归库洛所有，仅供学习研究。
+
 ## 跑起来
 
 ```powershell
