@@ -280,6 +280,31 @@ body.preview #root {
   }
 }
 
+/* 标题跑马灯：放不下时从右往左循环滚动 */
+.media-text i > em {
+  display: inline-block;
+  white-space: nowrap;
+  font-style: normal;
+}
+
+.media-text i.marquee > em {
+  animation: titleScroll 14s linear infinite;
+}
+
+.media-text i.marquee > em > span {
+  display: inline-block;
+  padding-right: 60px;
+}
+
+@keyframes titleScroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 .media-text u {
   font-size: 14px;
   font-weight: 400;
@@ -291,6 +316,8 @@ body.preview #root {
 }
 
 .media-text i {
+  display: block;
+  width: 100%;
   font-style: normal;
   font-size: 21px;
   font-weight: 700;

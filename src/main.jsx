@@ -63,6 +63,24 @@ export default function App() {
   const { time, date } = useClock();
   const gridRef = useRef(null);
   const panel = cfg.panel || FALLBACK.panel;
+  const titleRef = useRef(null);
+  const [marquee, setMarquee] = useState(false);
+  const titleText = np.title || panel.media?.title || "";
+
+  // 标题放不下才滚动（右 → 左）
+  useEffect(() => {
+    const el = titleRef.current;
+    if (!el) return;
+    const measure = () => {
+      const span = el.querySelector("span");
+      if (!span || !el.clientWidth) return;
+      const textW = span.offsetWidth - (el.classList.contains("marquee") ? 60 : 0);
+      setMarquee(textW > el.clientWidth + 1);
+    };
+    measure();
+    const id = requestAnimationFrame(measure);
+    return () => cancelAnimationFrame(id);
+  }, [titleText, open]);
 
   useEffect(() => {
     let alive = true;
@@ -216,13 +234,16 @@ export default function App() {
 
             <div className="media hit" data-ed="media">
               <span className={`cover ${np.cover ? "has-img" : ""}`}>
-                {np.cover ? (
-                  <img className={np.playing ? "spin" : ""} src={np.cover} alt="" draggable="false" />
-                ) : null}
+                {np.cover ? <img className="spin" src={np.cover} alt="" draggable="false" /> : null}
               </span>
               <span className="media-text">
                 <b>正在播放</b>
-                <i>{np.title || panel.media?.title}</i>
+                <i ref={titleRef} className={marquee ? "marquee" : ""} title={np.title || panel.media?.title}>
+                  <em>
+                    <span>{np.title || panel.media?.title}</span>
+                    {marquee ? <span aria-hidden="true">{np.title || panel.media?.title}</span> : null}
+                  </em>
+                </i>
                 {np.artist ? <u>{np.artist}</u> : null}
               </span>
             </div>
