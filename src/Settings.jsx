@@ -121,7 +121,7 @@ export default function Settings({ open, value, onChange, onClose, version, musi
           <h4>交流</h4>
           <div className="set-group">
             <div className="set-group-info">
-              <b>露娜bot交流群</b>
+              <b>升格网络开发交流群</b>
               <span>群号 1091767355</span>
               <button
                 className="set-copy"
