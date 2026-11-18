@@ -504,8 +504,16 @@ body.preview #root {
 }
 
 .quick button:hover img {
-  transform: translateY(-3px);
-  filter: drop-shadow(0 0 12px var(--accent));
+  transform: translateY(-6px) scale(1.08);
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.45)) drop-shadow(0 0 14px var(--accent));
+}
+
+.quick img {
+  transition: transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.35), filter 0.2s ease;
+}
+
+.quick button:active img {
+  transform: translateY(-2px) scale(0.95);
 }
 
 /* ── 投影镜头（在倾斜层外，正对屏幕）── */
