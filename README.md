@@ -94,6 +94,13 @@ tools/                解包脚本，见 tools/README.md
 - 没有开机自启 / 托盘图标
 
 
+## 免责声明
+
+本项目是**非官方同人作品**，与库洛游戏（Kuro Games）无关，未获授权或认可。
+游戏素材版权归库洛游戏所有，仅用于个人学习研究，禁止商用与二次分发。
+
+完整条款见 [DISCLAIMER.md](./DISCLAIMER.md)。
+
 ## 素材说明
 
 public/assets/_game/ 里的图标和字体来自《战双帕弥什》客户端解包（具体流程见 	ools/README.md），
