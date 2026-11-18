@@ -44,9 +44,9 @@ export default function App() {
   const [showSet, setShowSet] = useState(false);
   const [ui, setUi] = useState(() => {
     try {
-      return { particles: 72, grid: 85, motion: true, particleOn: true, ...JSON.parse(localStorage.getItem("pgr-ui") || "{}") };
+      return { particles: 72, grid: 85, beam: 100, motion: true, particleOn: true, ...JSON.parse(localStorage.getItem("pgr-ui") || "{}") };
     } catch {
-      return { particles: 72, grid: 85, motion: true, particleOn: true };
+      return { particles: 72, grid: 85, beam: 100, motion: true, particleOn: true };
     }
   });
 
@@ -55,6 +55,7 @@ export default function App() {
     const r = document.documentElement;
     r.style.setProperty("--g1", ((0.26 * ui.grid) / 100).toFixed(3));
     r.style.setProperty("--g2", ((0.21 * ui.grid) / 100).toFixed(3));
+    r.style.setProperty("--beam", (ui.beam / 100).toFixed(2));
     document.body.classList.toggle("no-motion", !ui.motion);
     localStorage.setItem("pgr-ui", JSON.stringify(ui));
   }, [ui]);

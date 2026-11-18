@@ -38,6 +38,18 @@ export default function Settings({ open, value, onChange, onClose, version, onOp
             <input type="range" min="0" max="100" step="1" value={value.grid} onChange={(e) => set("grid", Number(e.target.value))} />
             <b>{value.grid}%</b>
           </label>
+          <label className="set-row">
+            <span>投影光带</span>
+            <input
+              type="range"
+              min="0"
+              max="200"
+              step="5"
+              value={value.beam ?? 100}
+              onChange={(e) => set("beam", Number(e.target.value))}
+            />
+            <b>{value.beam ?? 100}%</b>
+          </label>
         </section>
 
         <section className="set-sec">
