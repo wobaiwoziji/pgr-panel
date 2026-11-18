@@ -3,6 +3,5 @@ dist/
 release/
 out/
 .playwright-mcp/
-public/assets/_game/
 tools/bundle_index.jsonl
 tools/sprite_index.jsonl
