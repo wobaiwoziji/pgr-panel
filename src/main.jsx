@@ -5,11 +5,13 @@ import "./tuner.css";
 import "./editor.css";
 import "./picker.css";
 import "./compare.css";
+import "./settings.css";
 import Tuner from "./Tuner.jsx";
 import Editor from "./Editor.jsx";
 import Picker from "./Picker.jsx";
 import Compare from "./Compare.jsx";
 import Particles from "./Particles.jsx";
+import Settings from "./Settings.jsx";
 
 const ASSET = "./assets/_game/icons/";
 const WEEK = ["日", "一", "二", "三", "四", "五", "六"];
@@ -39,6 +41,23 @@ export default function App() {
   const [open, setOpen] = useState(() => !window.pgr);
   const [toast, setToast] = useState("");
   const [np, setNp] = useState({ title: "", artist: "", cover: "", playing: false });
+  const [showSet, setShowSet] = useState(false);
+  const [ui, setUi] = useState(() => {
+    try {
+      return { particles: 72, grid: 85, motion: true, particleOn: true, ...JSON.parse(localStorage.getItem("pgr-ui") || "{}") };
+    } catch {
+      return { particles: 72, grid: 85, motion: true, particleOn: true };
+    }
+  });
+
+  // 设置实时生效
+  useEffect(() => {
+    const r = document.documentElement;
+    r.style.setProperty("--g1", ((0.26 * ui.grid) / 100).toFixed(3));
+    r.style.setProperty("--g2", ((0.21 * ui.grid) / 100).toFixed(3));
+    document.body.classList.toggle("no-motion", !ui.motion);
+    localStorage.setItem("pgr-ui", JSON.stringify(ui));
+  }, [ui]);
   const [bar, setBar] = useState({ top: 0, range: 0, ratio: 1 });
   const { time, date } = useClock();
   const gridRef = useRef(null);
@@ -174,7 +193,7 @@ export default function App() {
       <div className={`holo hit ${open ? "is-open" : ""}`}>
         {/* 唯一做倾斜的一层；里面全是正矩形 */}
         <div className="tilt" data-ed="tilt">
-          <Particles active={open} />
+          <Particles active={open && ui.particleOn} count={ui.particles} />
 
         {/* 投影轨迹：两片三角，边贴面板上下沿，角连镜头 */}
           <div className="tri tri-top" />
@@ -236,7 +255,18 @@ export default function App() {
 
             <div className="quick hit" data-ed="quick">
               {(panel.quick || []).map((q) => (
-                <button key={q.id} onClick={(e) => run(e, q.id)} title={q.id}>
+                <button
+                  key={q.id}
+                  onClick={(e) => {
+                    if (q.id === "settings") {
+                      e.stopPropagation();
+                      setShowSet(true);
+                      return;
+                    }
+                    run(e, q.id);
+                  }}
+                  title={q.id}
+                >
                   <img src={ASSET + q.icon + ".png"} alt="" draggable="false" data-ed={`quick-${q.id}`} />
                 </button>
               ))}
@@ -262,6 +292,17 @@ export default function App() {
       </button>
 
       {toast && <div className="toast">{toast}</div>}
+
+      <Settings
+        open={showSet}
+        value={ui}
+        onChange={setUi}
+        onClose={() => setShowSet(false)}
+        version="0.3"
+        onOpenConfig={() =>
+          window.pgr ? window.pgr.launch("settings") : setToast("预览模式：配置文件")
+        }
+      />
       {(!window.pgr || location.search.includes("tune")) && <Tuner />}
       {(!window.pgr || location.search.includes("edit")) && <Editor />}
       {(!window.pgr || location.search.includes("pick")) && <Picker />}

@@ -7,9 +7,9 @@ import React, { useEffect, useRef } from "react";
 const W = 760;
 const H = 892;
 const ORIGIN = { x: 631, y: 835 };
-const COUNT = 72;
+const DEFAULT_COUNT = 72;
 
-export default function Particles({ active = true }) {
+export default function Particles({ active = true, count = DEFAULT_COUNT }) {
   const ref = useRef(null);
 
   useEffect(() => {
@@ -42,7 +42,7 @@ export default function Particles({ active = true }) {
     };
 
     let t0 = performance.now();
-    let ps = Array.from({ length: COUNT }, () => spawn(t0 - Math.random() * 2500));
+    let ps = Array.from({ length: Math.max(0, count) }, () => spawn(t0 - Math.random() * 2500));
     let raf = 0;
 
     const frame = (now) => {
@@ -73,7 +73,7 @@ export default function Particles({ active = true }) {
 
     raf = requestAnimationFrame(frame);
     return () => cancelAnimationFrame(raf);
-  }, [active]);
+  }, [active, count]);
 
   if (!active) return null;
   return <canvas className="particles" ref={ref} />;
