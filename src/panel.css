@@ -233,7 +233,32 @@ body.preview #root {
   gap: 22px;
   padding: 0 22px;
   background: rgba(34, 32, 40, 0.88);
+  overflow: hidden;
   -webkit-app-region: no-drag;
+}
+
+/* 换歌时扫过一道光（Arwes 那种科技感反馈） */
+.media-sweep {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(100deg, transparent 20%, rgba(120, 195, 255, 0.16) 46%, rgba(160, 220, 255, 0.28) 50%, rgba(120, 195, 255, 0.16) 54%, transparent 80%);
+  transform: translateX(-100%);
+  animation: mediaSweep 1.1s cubic-bezier(0.25, 0.8, 0.3, 1) 0.05s 1 both;
+}
+
+@keyframes mediaSweep {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
 }
 
 .cover {
@@ -262,19 +287,43 @@ body.preview #root {
   background: none;
 }
 
+/* 封面外面这层负责淡入，里面的 img 负责旋转，两者不抢 transform */
+.cover-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  animation: coverIn 0.42s cubic-bezier(0.22, 0.9, 0.3, 1) both;
+}
+
+@keyframes coverIn {
+  from {
+    opacity: 0;
+    transform: scale(0.86);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
 .cover img {
   width: 100%;
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
   display: block;
-}
-
-.cover img.spin {
   animation: coverSpin 9s linear infinite;
 }
 
+/* 从 0° 起速，看起来像唱片刚放上去 */
 @keyframes coverSpin {
+  from {
+    transform: rotate(0deg);
+  }
   to {
     transform: rotate(360deg);
   }
@@ -294,7 +343,7 @@ body.preview #root {
 }
 
 .media-text i.marquee > em {
-  animation: titleScroll 14s linear infinite;
+  animation: titleScroll 14s linear 1.1s infinite;
 }
 
 .media-text i.marquee > em > span {
@@ -330,6 +379,18 @@ body.preview #root {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  animation: titleIn 0.34s cubic-bezier(0.22, 0.9, 0.3, 1) both;
+}
+
+@keyframes titleIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+}
+
+.media-text u {
+  animation: titleIn 0.34s cubic-bezier(0.22, 0.9, 0.3, 1) 0.05s both;
 }
 
 /* ── 九宫格：普通 grid，无任何 transform ── */

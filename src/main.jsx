@@ -186,15 +186,19 @@ export default function App() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  // 读取系统「正在播放」
+  // 读取系统「正在播放」：有歌时 1.4s 一探，空转时放慢到 3.5s，换歌响应更快
   useEffect(() => {
     if (!window.pgr?.nowPlaying) return;
     let alive = true;
+    let timer = null;
+
     const tick = async () => {
+      let hasTrack = false;
       try {
         const r = await window.pgr.nowPlaying();
         if (!alive) return;
         if (r?.ok && (r.title || r.cover)) {
+          hasTrack = !!r.title;
           const base = { title: r.title || "", artist: r.artist || "", cover: r.cover || "", playing: !!r.playing };
           setNp(base);
           setMusicDbg(base.cover ? "已连接 · 有封面" : "已连接 · 播放器没给封面");
@@ -211,14 +215,27 @@ export default function App() {
       } catch {
         /* 忽略 */
       }
+      if (!alive) return;
+      timer = setTimeout(tick, hasTrack ? 1400 : 3500);
     };
+
     tick();
-    const id = setInterval(tick, 3000);
     return () => {
       alive = false;
-      clearInterval(id);
+      clearTimeout(timer);
     };
   }, [ui.onlineCover]);
+
+  // 换歌时保留上一张封面一小会儿，新图到了再淡入，避免中间闪一下空白
+  const [art, setArt] = useState("");
+  useEffect(() => {
+    if (np.cover) {
+      setArt(np.cover);
+      return;
+    }
+    const t = setTimeout(() => setArt(""), 1600);
+    return () => clearTimeout(t);
+  }, [np.cover, np.title]);
 
   const toggle = useCallback(() => setOpen((v) => !v), []);
 
@@ -334,12 +351,18 @@ export default function App() {
             </div>
 
             <div className="media hit" data-ed="media">
-              <span className={`cover ${np.cover ? "has-img" : ""}`}>
-                {np.cover ? <img className="spin" src={np.cover} alt="" draggable="false" /> : null}
+              {np.title ? <span className="media-sweep" key={np.title} /> : null}
+              <span className={`cover ${art ? "has-img" : ""}`}>
+                {art ? (
+                  <span className="cover-art" key={art}>
+                    <img src={art} alt="" draggable="false" />
+                  </span>
+                ) : null}
               </span>
               <span className="media-text">
                 <b>{np.title ? "正在播放" : "音乐"}</b>
                 <i
+                  key={titleText}
                   ref={titleRef}
                   className={`${marquee ? "marquee" : ""} ${np.title ? "" : "idle"}`}
                   title={titleText}
@@ -349,7 +372,7 @@ export default function App() {
                     {marquee ? <span aria-hidden="true">{titleText}</span> : null}
                   </em>
                 </i>
-                {np.artist ? <u>{np.artist}</u> : null}
+                {np.artist ? <u key={np.artist}>{np.artist}</u> : null}
               </span>
             </div>
 
