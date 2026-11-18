@@ -222,10 +222,37 @@ export default function App() {
 
   const toggle = useCallback(() => setOpen((v) => !v), []);
 
+  // 上报面板在窗口里的实际留白（拖动/展开/缩放后各测一次）
+  const measureInsets = () => {
+    if (!window.pgr?.insets) return;
+    const el = document.querySelector(".holo.is-open .panel") || document.querySelector(".dock");
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    window.pgr.insets({
+      l: Math.max(0, Math.round(r.left)),
+      t: Math.max(0, Math.round(r.top)),
+      r: Math.max(0, Math.round(window.innerWidth - r.right)),
+      b: Math.max(0, Math.round(window.innerHeight - r.bottom)),
+    });
+  };
+
+  useEffect(() => {
+    measureInsets();
+    const t1 = setTimeout(measureInsets, 300);
+    const t2 = setTimeout(measureInsets, 900);
+    window.addEventListener("resize", measureInsets);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      window.removeEventListener("resize", measureInsets);
+    };
+  }, [open, ui.zoom]);
+
   // 右键按住投影球拖整个挂件；左键只负责展开/收起
   const startDrag = (e) => {
     if (!window.pgr?.dragStart || e.button !== 2) return;
     e.preventDefault();
+    measureInsets();
     draggingRef.current = true;
     const onUp = () => {
       window.removeEventListener("pointerup", onUp);

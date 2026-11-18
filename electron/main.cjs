@@ -61,7 +61,20 @@ function expand(value) {
 let win = null;
 let tray = null;
 
-// 把窗口限制在屏幕工作区内，避免缩放/拖动后跑到看不见的地方
+// 面板在窗口里的实际留白（渲染进程在拖动/缩放后上报），让“看得见的面板”贴屏幕边
+let insets = { l: 0, t: 0, r: 0, b: 0 };
+
+// 让“可见的面板”正好能贴住屏幕边：窗口的透明留白可以探出屏幕
+function clampPanel(x, y, w, h) {
+  const cx = Math.round(x + w / 2);
+  const cy = Math.round(y + h / 2);
+  const area = screen.getDisplayNearestPoint({ x: cx, y: cy }).workArea;
+  const nx = Math.max(area.x - insets.l, Math.min(Math.round(x), area.x + area.width - w + insets.r));
+  const ny = Math.max(area.y - insets.t, Math.min(Math.round(y), area.y + area.height - h + insets.b));
+  return { x: nx, y: ny };
+}
+
+// 启动/复位用：整窗塞进工作区
 function clampPos(x, y, w, h) {
   const cx = Math.round(x + w / 2);
   const cy = Math.round(y + h / 2);
@@ -253,21 +266,31 @@ ipcMain.on("pgr:drag-start", () => {
   menuBlockUntil = 0;
   const c0 = screen.getCursorScreenPoint();
   const [x0, y0] = win.getPosition();
+  const size0 = win.getBounds();
   const started = Date.now();
   dragTimer = setInterval(() => {
     if (!win || win.isDestroyed() || Date.now() - started > 30000) return stopDrag();
     const c = screen.getCursorScreenPoint();
     try {
-      const b = win.getBounds();
-      const p = clampPos(x0 + c.x - c0.x, y0 + c.y - c0.y, b.width, b.height);
-      win.setPosition(p.x, p.y);
+      win.setBounds({
+        x: x0 + c.x - c0.x,
+        y: y0 + c.y - c0.y,
+        width: size0.width,
+        height: size0.height,
+      });
     } catch {
       stopDrag();
     }
   }, 16);
 });
 
-ipcMain.on("pgr:drag-end", stopDrag);
+ipcMain.on("pgr:drag-end", () => {
+  stopDrag();
+  if (!win || win.isDestroyed()) return;
+  const b = win.getBounds();
+  const p = clampPanel(b.x, b.y, b.width, b.height);
+  if (p.x !== b.x || p.y !== b.y) win.setPosition(p.x, p.y);
+});
 
 ipcMain.handle("pgr:cover", (_e, q) => findCover(q));
 
@@ -293,12 +316,13 @@ function applyZoom(z) {
     nw = Math.max(nw, Math.min(MODAL.w, area.width));
     nh = Math.max(nh, Math.min(MODAL.h, area.height));
   }
-  const pos = clampPos(b.x + b.width - nw, b.y + b.height - nh, nw, nh);
+  const pos = clampPanel(b.x + b.width - nw, b.y + b.height - nh, nw, nh);
   win.setBounds({ ...pos, width: nw, height: nh });
   return zz;
 }
 
 ipcMain.handle("pgr:zoom", (_e, z) => applyZoom(z));
+ipcMain.handle("pgr:bounds", () => (win ? win.getBounds() : null));
 
 ipcMain.on("pgr:modal", (_e, on) => {
   modalOpen = !!on;
@@ -363,6 +387,16 @@ ipcMain.handle("pgr:pickImage", async () => {
   } catch {
     return "";
   }
+});
+
+ipcMain.on("pgr:insets", (_e, v) => {
+  if (!v) return;
+  insets = {
+    l: Math.max(0, Math.round(v.l) || 0),
+    t: Math.max(0, Math.round(v.t) || 0),
+    r: Math.max(0, Math.round(v.r) || 0),
+    b: Math.max(0, Math.round(v.b) || 0),
+  };
 });
 
 ipcMain.on("pgr:suppress-menu", () => {

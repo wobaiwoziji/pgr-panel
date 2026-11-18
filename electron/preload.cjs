@@ -9,6 +9,8 @@ contextBridge.exposeInMainWorld("pgr", {
   dragStart: () => ipcRenderer.send("pgr:drag-start"),
   dragEnd: () => ipcRenderer.send("pgr:drag-end"),
   modal: (on) => ipcRenderer.send("pgr:modal", on),
+  insets: (v) => ipcRenderer.send("pgr:insets", v),
+  bounds: () => ipcRenderer.invoke("pgr:bounds"),
   update: (payload) => ipcRenderer.invoke("pgr:update", payload),
   pickFile: () => ipcRenderer.invoke("pgr:pickFile"),
   pickImage: () => ipcRenderer.invoke("pgr:pickImage"),
