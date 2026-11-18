@@ -287,6 +287,12 @@ body.preview #root {
   font-style: normal;
 }
 
+.media-text i.idle {
+  font-size: 18px;
+  font-weight: 400;
+  color: rgba(190, 214, 240, 0.45);
+}
+
 .media-text i.marquee > em {
   animation: titleScroll 14s linear infinite;
 }

@@ -108,7 +108,7 @@ export default function App() {
   const panel = cfg.panel || FALLBACK.panel;
   const titleRef = useRef(null);
   const [marquee, setMarquee] = useState(false);
-  const titleText = np.title || panel.media?.title || "";
+  const titleText = np.title || "未在播放";
 
   // 标题放不下才滚动（右 → 左）
   useEffect(() => {
@@ -338,11 +338,15 @@ export default function App() {
                 {np.cover ? <img className="spin" src={np.cover} alt="" draggable="false" /> : null}
               </span>
               <span className="media-text">
-                <b>正在播放</b>
-                <i ref={titleRef} className={marquee ? "marquee" : ""} title={np.title || panel.media?.title}>
+                <b>{np.title ? "正在播放" : "音乐"}</b>
+                <i
+                  ref={titleRef}
+                  className={`${marquee ? "marquee" : ""} ${np.title ? "" : "idle"}`}
+                  title={titleText}
+                >
                   <em>
-                    <span>{np.title || panel.media?.title}</span>
-                    {marquee ? <span aria-hidden="true">{np.title || panel.media?.title}</span> : null}
+                    <span>{titleText}</span>
+                    {marquee ? <span aria-hidden="true">{titleText}</span> : null}
                   </em>
                 </i>
                 {np.artist ? <u>{np.artist}</u> : null}
