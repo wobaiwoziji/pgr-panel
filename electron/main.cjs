@@ -152,6 +152,17 @@ function createWindow() {
 ipcMain.handle("pgr:nowplaying", () => nowPlaying(path.join(RES, "nowplaying.ps1")));
 ipcMain.handle("pgr:cover", (_e, q) => findCover(q));
 
+// 整体缩放：窗口跟着一起变，右下角保持不动
+ipcMain.handle("pgr:zoom", (_e, z) => {
+  if (!win) return false;
+  const zz = Math.min(1.5, Math.max(0.5, Number(z) || 1));
+  const b = win.getBounds();
+  const nw = Math.round(W.width * zz);
+  const nh = Math.round(W.height * zz);
+  win.setBounds({ x: b.x + b.width - nw, y: b.y + b.height - nh, width: nw, height: nh });
+  return true;
+});
+
 ipcMain.handle("pgr:config", () => ({
   ...config,
   runtime: { scale: process.env.PGR_SCALE ? Number(process.env.PGR_SCALE) : W.width / 760 },

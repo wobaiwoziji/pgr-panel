@@ -62,7 +62,7 @@ body.preview #root {
   position: relative;
   width: 760px;
   height: 892px;
-  zoom: var(--scale);
+  zoom: calc(var(--scale) * var(--zoom, 1));
 }
 
 /* ── 展开动画（只做缩放淡入，不做倾斜）── */

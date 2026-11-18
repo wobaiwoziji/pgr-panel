@@ -39,6 +39,18 @@ export default function Settings({ open, value, onChange, onClose, version, musi
             <b>{value.grid}%</b>
           </label>
           <label className="set-row">
+            <span>投影缩放</span>
+            <input
+              type="range"
+              min="60"
+              max="140"
+              step="5"
+              value={value.zoom ?? 100}
+              onChange={(e) => set("zoom", Number(e.target.value))}
+            />
+            <b>{value.zoom ?? 100}%</b>
+          </label>
+          <label className="set-row">
             <span>投影光带</span>
             <input
               type="range"

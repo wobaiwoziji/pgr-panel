@@ -45,18 +45,26 @@ export default function App() {
   const [musicDbg, setMusicDbg] = useState("检测中…");
   const [ui, setUi] = useState(() => {
     try {
-      return { particles: 72, grid: 85, beam: 100, motion: true, particleOn: true, onlineCover: true, ...JSON.parse(localStorage.getItem("pgr-ui") || "{}") };
+      return { particles: 72, grid: 85, beam: 100, zoom: 100, motion: true, particleOn: true, onlineCover: true, ...JSON.parse(localStorage.getItem("pgr-ui") || "{}") };
     } catch {
-      return { particles: 72, grid: 85, beam: 100, motion: true, particleOn: true, onlineCover: true };
+      return { particles: 72, grid: 85, beam: 100, zoom: 100, motion: true, particleOn: true, onlineCover: true };
     }
   });
 
   // 设置实时生效
+  const zoomApplied = useRef(null);
   useEffect(() => {
     const r = document.documentElement;
     r.style.setProperty("--g1", ((0.26 * ui.grid) / 100).toFixed(3));
     r.style.setProperty("--g2", ((0.21 * ui.grid) / 100).toFixed(3));
     r.style.setProperty("--beam", (ui.beam / 100).toFixed(2));
+    const z = (ui.zoom ?? 100) / 100;
+    r.style.setProperty("--zoom", z.toFixed(2));
+    // 首次是 100% 就别动窗口（可能被 PGR_SIZE 指定过尺寸）
+    if (window.pgr?.zoom && zoomApplied.current !== z) {
+      if (zoomApplied.current !== null || z !== 1) window.pgr.zoom(z);
+      zoomApplied.current = z;
+    }
     document.body.classList.toggle("no-motion", !ui.motion);
     localStorage.setItem("pgr-ui", JSON.stringify(ui));
   }, [ui]);
