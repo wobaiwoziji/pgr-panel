@@ -343,6 +343,7 @@ body.preview #root {
 .cell-box {
   position: relative;
   display: grid;
+  transition: background 0.14s ease, transform 0.12s ease;
   place-items: center;
   width: 100%;
   height: 102px;
@@ -376,6 +377,12 @@ body.preview #root {
 
 .cell:hover .cell-box {
   background: #0d1420;
+  transform: translateY(-4px);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.4);
+}
+
+.cell:hover .cell-label {
+  transform: translateY(-4px);
 }
 
 .cell:hover .cell-box::after {
@@ -387,8 +394,35 @@ body.preview #root {
 }
 
 .cell:hover .cell-box img {
-  transform: scale(1.06);
+  transform: translateY(-2px) scale(1.07);
   filter: drop-shadow(0 0 10px rgba(78, 163, 255, 0.7));
+}
+
+/* 点下去的那一下 */
+.cell:active .cell-box {
+  transform: scale(0.965);
+  background: #101a2a;
+}
+
+.cell:active .cell-label {
+  transform: scale(0.985);
+}
+
+/* 展开时逐个入场 */
+.holo.is-open .cell {
+  animation: cellIn 0.34s cubic-bezier(0.2, 0.85, 0.25, 1) both;
+  animation-delay: calc(var(--i, 0) * 22ms);
+}
+
+@keyframes cellIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .cell:hover .cell-label {

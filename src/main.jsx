@@ -207,8 +207,13 @@ export default function App() {
               <div className="track">
                 {rows.map((row, ri) => (
                   <div className="row" key={ri}>
-                    {row.map((b) => (
-                      <button className="cell" key={b.id} onClick={(e) => run(e, b.id)}>
+                    {row.map((b, ci) => (
+                      <button
+                        className="cell"
+                        key={b.id}
+                        style={{ "--i": ri * 3 + ci }}
+                        onClick={(e) => run(e, b.id)}
+                      >
                         <span className="cell-box" data-ed={`box-${b.id}`}>
                           <img src={ASSET + b.icon + ".png"} alt="" draggable="false" data-ed={`icon-${b.id}`} />
                         </span>
