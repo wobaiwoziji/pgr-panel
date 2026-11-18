@@ -54,7 +54,6 @@ export default function App() {
   // 设置实时生效
   const zoomApplied = useRef(null);
   const draggingRef = useRef(false);
-  const movedRef = useRef(false);
   useEffect(() => {
     const r = document.documentElement;
     r.style.setProperty("--g1", ((0.26 * ui.grid) / 100).toFixed(3));
@@ -190,34 +189,21 @@ export default function App() {
 
   const toggle = useCallback(() => setOpen((v) => !v), []);
 
-  // 按住投影球拖整个挂件；位移超过 4px 就不当成点击
+  // 右键按住投影球拖整个挂件；左键只负责展开/收起
   const startDrag = (e) => {
-    if (!window.pgr?.dragStart || e.button !== 0) return;
-    const x0 = e.screenX;
-    const y0 = e.screenY;
+    if (!window.pgr?.dragStart || e.button !== 2) return;
+    e.preventDefault();
     draggingRef.current = true;
-    movedRef.current = false;
-    const onMove = (ev) => {
-      if (Math.abs(ev.screenX - x0) + Math.abs(ev.screenY - y0) > 4) movedRef.current = true;
-    };
     const onUp = () => {
-      window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
       draggingRef.current = false;
       window.pgr.dragEnd();
     };
-    window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
     window.pgr.dragStart();
   };
 
-  const lensClick = () => {
-    if (movedRef.current) {
-      movedRef.current = false;
-      return;
-    }
-    toggle();
-  };
+  const noMenu = (e) => e.preventDefault();
 
   const run = async (e, id) => {
     e.stopPropagation();
@@ -350,7 +336,13 @@ export default function App() {
           </div>
 
           {/* 镜头跟着面板一起，贴在右下角 */}
-          <div className="lens hit" data-ed="lens" onPointerDown={startDrag} onClick={lensClick}>
+          <div
+            className="lens hit"
+            data-ed="lens"
+            onPointerDown={startDrag}
+            onClick={toggle}
+            onContextMenu={noMenu}
+          >
             <i className="l-ring" />
             <i className="l-petals" />
             <i className="l-core" />
@@ -362,7 +354,8 @@ export default function App() {
         className={`dock hit ${open ? "is-hidden" : ""}`}
         data-ed="dock"
         onPointerDown={startDrag}
-        onClick={lensClick}
+        onClick={toggle}
+        onContextMenu={noMenu}
       >
         <span className="dock-time">{time}</span>
         <span className="dock-lens">

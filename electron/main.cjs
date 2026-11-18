@@ -168,6 +168,8 @@ function createWindow() {
   });
 
   win.webContents.on("context-menu", () => {
+    // 拖动投影时右键不该弹菜单
+    if (Date.now() < menuBlockUntil) return;
     Menu.buildFromTemplate([
       { label: "重新加载", click: () => win.reload() },
       { label: "打开配置", click: () => shell.openPath(CONFIG_PATH) },
@@ -180,14 +182,17 @@ function createWindow() {
 ipcMain.handle("pgr:nowplaying", () => nowPlaying(path.join(RES, "nowplaying.ps1")));
 // 拖拽投影：按住镜头球移动整个窗口（主进程跟光标，省 IPC）
 let dragTimer = null;
+let menuBlockUntil = 0;
 function stopDrag() {
   if (dragTimer) clearInterval(dragTimer);
   dragTimer = null;
+  menuBlockUntil = Date.now() + 500;
 }
 
 ipcMain.on("pgr:drag-start", () => {
   if (!win) return;
   stopDrag();
+  menuBlockUntil = 0;
   const c0 = screen.getCursorScreenPoint();
   const [x0, y0] = win.getPosition();
   dragTimer = setInterval(() => {
