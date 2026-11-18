@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, shell, screen, Menu, globalShortcut } = require("electron");
+const { app, BrowserWindow, ipcMain, shell, screen, Menu, globalShortcut, Tray, nativeImage } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const { nowPlaying, findCover } = require("./media.cjs");
@@ -33,6 +33,34 @@ function expand(value) {
 }
 
 let win = null;
+let tray = null;
+
+function toggleShow() {
+  if (!win) return;
+  if (win.isVisible()) win.hide();
+  else win.show();
+}
+
+// 托盘：常驻右下角「隐藏的图标」里，关掉面板也能从这儿叫回来
+function createTray() {
+  const iconPath = app.isPackaged ? path.join(RES, "tray.ico") : path.join(ROOT, "build", "icon.ico");
+  try {
+    tray = new Tray(nativeImage.createFromPath(iconPath));
+  } catch {
+    return;
+  }
+  tray.setToolTip("PGR Panel");
+  tray.setContextMenu(
+    Menu.buildFromTemplate([
+      { label: "显示 / 收起", click: toggleShow },
+      { label: "重新加载", click: () => win?.reload() },
+      { label: "打开配置", click: () => shell.openPath(CONFIG_PATH) },
+      { type: "separator" },
+      { label: "退出", click: () => app.quit() },
+    ])
+  );
+  tray.on("click", toggleShow);
+}
 
 const STATE_PATH = path.join(app.getPath("userData"), "window-state.json");
 
@@ -218,6 +246,7 @@ ipcMain.on("pgr:quit", () => app.quit());
 
 app.whenReady().then(() => {
   createWindow();
+  createTray();
 
   // 兜底：Ctrl+Alt+Q 随时退出（面板没有窗口边框，容易关不掉）
   globalShortcut.register("Control+Alt+Q", () => app.quit());

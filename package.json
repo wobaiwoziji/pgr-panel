@@ -37,7 +37,8 @@
     ],
     "extraResources": [
       { "from": "config.json", "to": "config.json" },
-      { "from": "electron/nowplaying.ps1", "to": "nowplaying.ps1" }
+      { "from": "electron/nowplaying.ps1", "to": "nowplaying.ps1" },
+      { "from": "build/icon.ico", "to": "tray.ico" }
     ],
     "win": {
       "icon": "build/icon.ico",
